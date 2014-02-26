@@ -1,6 +1,5 @@
 (ns datomic-schemer.core
-  (:require [datomic.api :as d]
-            [datomic-schema.schema :as ds]))
+  (:require [datomic-schema.schema :as ds]))
 
 (defn expand-fields
   "fn replacement for datomic-schema.schema/fields.
