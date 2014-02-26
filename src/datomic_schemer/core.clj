@@ -58,6 +58,7 @@
 
   (defonce db-url "datomic:mem://testdb")
   (d/create-database db-url)
-  (map (partial d/transact (d/connect db-url)) (schematize datomic-schemer.core-test/test-schemas d/tempid))
+  (map (partial d/transact (d/connect db-url))
+       (schematize datomic-schemer.core-test/test-schemas d/tempid))
 
   )
