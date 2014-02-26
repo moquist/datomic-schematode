@@ -13,6 +13,17 @@
                    [:permission :string :many]]
            :part :user}])
 
+(deftest expand-fields-test
+  (testing "expand-fields"
+    (is (= (expand-fields
+            (get-in (apply hash-map datomic-schemer.core-test/test-schemas)
+                    [:user :attrs]))
+           {"group" [:ref #{:many}],
+            "status" [:enum #{[:pending :active :inactive :cancelled]}],
+            "email" [:string #{:indexed}],
+            "pwd" [:string #{"Hashed password string"}],
+            "username" [:string #{:indexed}]}))))
+
 (deftest expand-schemas-test
   (testing "expand-schemas"
     (is (= (expand-schemas test-schemas)
