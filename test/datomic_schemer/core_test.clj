@@ -3,6 +3,8 @@
             [datomic-schemer.core :refer :all]))
 
 (def test-schemas
+  ;; [nod] to
+  ;; https://github.com/Yuppiechef/datomic-schema/blob/master/README.md
   [:user {:attrs [[:username :string :indexed]
                   [:pwd :string "Hashed password string"]
                   [:email :string :indexed]
