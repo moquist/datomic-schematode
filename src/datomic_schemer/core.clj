@@ -14,13 +14,18 @@
           {}
           fdefs))
 
+(defn chunk-schemas
+  "Tranform a seq of :namespace,schema pairs into a seq of '(namespace schema) seqs"
+  [sdefs]
+  (partition 2 sdefs))
+
 (defn expand-schemas
   "Transform a seq of :namespace,schema pairs into a seq of
   schema-expression maps suitable for processing by
   datomic-schema.schema/generate-schema."
   [sdefs]
   (reduce (fn -scheme [a [sname sdef]]
-            (let [part (keyword "db.part" (name (:part sdef)))
+            (let [part (keyword "db.part" (name (or (:part sdef) "user")))
                   sname (name sname)
                   attrs (expand-fields (:attrs sdef))]
               (conj a
