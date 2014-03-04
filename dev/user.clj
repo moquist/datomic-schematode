@@ -6,6 +6,7 @@
             [clojure.test :as test]
             [clojure.tools.namespace.repl :refer (refresh refresh-all)]
             [datomic.api :as d]
+            [datomic-schema.schema :as dsa]
             [datomic-schemer.core :as ds-core]
             [datomic-schemer.core-test :as ds-test]))
 
