@@ -1,5 +1,5 @@
 (ns datomic-schemer.core
-  (:require [datomic-schema.schema :as ds]))
+  (:require [datomic-schema.schema :as dsa]))
 
 (defn expand-fields
   "fn replacement for datomic-schema.schema/fields.
@@ -35,14 +35,30 @@
                      :basetype (keyword sname)
                      :fields attrs})))
           []
-          (partition 2 sdefs)))
+          (chunk-schemas sdefs)))
+
+(defn partize
+  "Transform a seq of :namespace,schema pairs into a seq of
+  transactable partition-installation maps."
+  [sdefs tempid-fn]
+  (reduce (partial dsa/part-to-datomic tempid-fn)
+          []
+          (remove #{:user}
+                  (distinct
+                   (map (fn schematize-p [[_ s]] (:part s))
+                        (filter #{:part}
+                                (chunk-schemas sdefs)))))))
 
 (defn schematize
   "Transform a seq of :namespace,schema pairs into transactable
   datomic schema."
   [sdefs tempid-fn]
-  (map (partial ds/generate-schema tempid-fn)
-       (expand-schemas sdefs)))
+  (let [schema (map (partial dsa/generate-schema tempid-fn)
+                    (expand-schemas sdefs))
+        partitions (partize sdefs tempid-fn)]
+    (if (empty? partitions)
+      schema
+      (conj schema partitions))))
 
 (comment
   (def schema-full-sample
