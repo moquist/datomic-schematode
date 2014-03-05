@@ -7,7 +7,7 @@
   Returns a map suitable for processing by
   datomic-schema.schema/field-to-datomic."
   [fdefs]
-  (reduce (fn -fields [a [fname type & opts]]
+  (reduce (fn expand-fields- [a [fname type & opts]]
             (assoc a
               (name fname)
               [type (set opts)]))
@@ -24,7 +24,7 @@
   schema-expression maps suitable for processing by
   datomic-schema.schema/generate-schema."
   [sdefs]
-  (reduce (fn -scheme [a [sname sdef]]
+  (reduce (fn expand-schemas- [a [sname sdef]]
             (let [part (keyword "db.part" (name (or (:part sdef) "user")))
                   sname (name sname)
                   attrs (expand-fields (:attrs sdef))]
@@ -45,7 +45,7 @@
           []
           (remove #{:user}
                   (distinct
-                   (map (fn schematize-p [[_ s]] (:part s))
+                   (map (fn partize- [[_ s]] (:part s))
                         (filter #{:part}
                                 (chunk-schemas sdefs)))))))
 
