@@ -43,11 +43,10 @@
   [sdefs tempid-fn]
   (reduce (partial dsa/part-to-datomic tempid-fn)
           []
-          (remove #{:user}
+          (remove #{:db.part/user}
                   (distinct
-                   (map (fn partize- [[_ s]] (:part s))
-                        (filter #{:part}
-                                (chunk-schemas sdefs)))))))
+                   (map (fn partize- [[_ s]] (keyword "db.part" (name (or (:part s) "user"))))
+                        (chunk-schemas sdefs))))))
 
 (defn schematize
   "Transform a seq of :namespace,schema pairs into transactable
