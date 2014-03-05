@@ -15,7 +15,9 @@
                   [:group :ref :many]]
           :part :app}
    :group {:attrs [[:name :string]
-                   [:permission :string :many]]}])
+                   [:permission :string :many]]
+           ;; testing without :part
+           }])
 
 (deftest expand-fields-test
   (testing "expand-fields"
