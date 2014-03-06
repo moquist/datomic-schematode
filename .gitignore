@@ -2,11 +2,14 @@
 *.jar
 /.lein-*
 /.nrepl-port
+.repl
 /checkouts
 /classes
-/classes/
-/lib/
+/lib
 /target
 /targets/
 pom.xml
 pom.xml.asc
+repl
+*#*#
+*.#*
