@@ -30,6 +30,21 @@
 
 (comment
   (d/transact (d/connect db-url) [{:db/id #db/id[:db.part/user] :user/username "fleem"}])
+  (d/transact (d/connect db-url) [{:db/id #db/id[:db.part/user] :user/username "fleem2" :user/pwd "hash123"}])
+
+  ;; in datomic, always think: EAVT (Entity, Attribute, Value, Time)
+  (def b1 (d/q '[:find ?e
+                 :where [?e :user/username]]
+               (d/db (d/connect db-url))))
+  (map #(d/touch
+         (d/entity
+          (d/db (d/connect db-url))
+          (first %)))
+       (d/q '[:find ?e
+              :where [?e :db/ident]]
+            (d/db (d/connect db-url))))
+
+  
   (d/transact (d/connect db-url)
               [{:db/id (d/tempid :db.part/user)
                 :db/ident :hello2
