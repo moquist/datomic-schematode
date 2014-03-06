@@ -69,6 +69,45 @@
                                      :params [name]
                                      :code (str "Hello, " name)})}])
 
+  ;;; Here is the fledgling alternate tx fn that handles constraints.
+  (d/transact (d/connect db-url)
+              [{:db/id (d/tempid :db.part/user)
+                :db/ident :schematode-tx
+                :db/fn (d/function '{:lang :clojure
+                                     :params [db txs]
+                                     :code (let [wdb (:db-after (d/with db txs))
+                                                 constraints (d/q '[:find ?e
+                                                                    :where [?e :schematode-constraint/name]] wdb)]
+                                             (if (or (empty? constraints)
+                                                     (every? true?
+                                                             (map (fn schematode-tx- [[c]]
+                                                                    (let [c (d/entity wdb c)]
+                                                                      ((:db/fn c) wdb)))
+                                                                  constraints)))
+                                               txs
+                                               (throw (Exception. "Bad TX. Bad!"))))})}])
+
+  (d/transact (d/connect db-url)
+              [{:db/id (d/tempid :db.part/user)
+                :db/ident :yeep
+                :schematode-constraint/name "yeep"
+                :db/fn (d/function '{:lang :clojure
+                                     :params [db]
+                                     :code true})}])
+
+  (d/transact (d/connect db-url)
+              [[:schematode-tx
+                [{:db/id #db/id[:db.part/user]
+                  :user/username "jim2"}]]])
+
+  (d/with (d/db (d/connect db-url))
+          [{:db/id #db/id[:db.part/user]
+            :user/username "fleem3"}])
+
+  (d/touch (d/entity (d/db (d/connect db-url))
+                     (ffirst (d/q '[:find ?e :where [?e :user/username]]
+                                  (d/db (d/connect db-url))))))
+
   (def dbval (d/db (d/connect db-url)))
   ;; retrieve function from db and call it
   (def hello-from-db (d/entity dbval :hello))
