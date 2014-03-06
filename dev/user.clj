@@ -28,6 +28,23 @@
   (stop!)
   (refresh :after 'user/start!))
 
+(defn touch-that
+  "Execute the specified query on the current DB and return the results of touching each entity.
+   The first binding must be to the entity.
+   All other bindings are ignored."
+  [query]
+  (map #(d/touch
+         (d/entity
+          (d/db (d/connect db-url))
+          (first %)))
+       (d/q query
+            (d/db (d/connect db-url)))))
+
+(defn ptouch-that
+  "Example: (ptouch-that '[:find ?e :where [?e :user/username]])"
+  [query]
+  (pprint (touch-that query)))
+
 (comment
   (d/transact (d/connect db-url) [{:db/id #db/id[:db.part/user] :user/username "fleem"}])
   (d/transact (d/connect db-url) [{:db/id #db/id[:db.part/user] :user/username "fleem2" :user/pwd "hash123"}])
