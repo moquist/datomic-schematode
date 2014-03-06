@@ -5,9 +5,9 @@
 (def test-schemas
   ;; [nod] to
   ;; https://github.com/Yuppiechef/datomic-schema/blob/master/README.md
-  [:data-constraint {:attrs [[:name :string :indexed]
-                             [:desc :string]]
-                     :part :user}
+  [:schematode-constraint {:attrs [[:name :string :indexed]
+                                   [:desc :string]]
+                           :part :user}
    :user {:attrs [[:username :string :indexed]
                   [:pwd :string "Hashed password string"]
                   [:email :string :indexed]
