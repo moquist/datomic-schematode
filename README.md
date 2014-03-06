@@ -1,5 +1,6 @@
 datomic-schematode [![Build Status](https://travis-ci.org/vlacs/datomic-schematode.png?branch=master)](https://travis-ci.org/vlacs/datomic-schematode)
 ===============
+Note: Still pre-release.
 
 <a title="By Bob Goldstein, UNC Chapel Hill http://bio.unc.edu/people/faculty/goldstein/ (Own work) [CC-BY-SA-3.0 (http://creativecommons.org/licenses/by-sa/3.0)], via Wikimedia Commons" href="http://commons.wikimedia.org/wiki/File%3ACelegansGoldsteinLabUNC.jpg"><img width="64" alt="CelegansGoldsteinLabUNC" src="http://upload.wikimedia.org/wikipedia/commons/6/6a/CelegansGoldsteinLabUNC.jpg"/></a>
 
@@ -25,7 +26,7 @@ Datomic Schematode takes your concise schema expression and expands upon it, so 
 
 Uses https://github.com/Yuppiechef/datomic-schema .
 
-TODO:
+TODO before release:
 * Support DB fns.
 * Add vanilla support for complex DB constraints.
 * Add vanilla support for default attr values.
