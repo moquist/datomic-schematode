@@ -7,8 +7,8 @@
             [clojure.tools.namespace.repl :refer (refresh refresh-all)]
             [datomic.api :as d]
             [datomic-schema.schema :as dsa]
-            [datomic-schemer.core :as ds-core]
-            [datomic-schemer.core-test :as ds-test]))
+            [datomic-schematode.core :as ds-core]
+            [datomic-schematode.core-test :as ds-test]))
 
 (def db-url "datomic:mem://testdb")
 

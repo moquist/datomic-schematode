@@ -1,6 +1,6 @@
-(ns datomic-schemer.core-test
+(ns datomic-schematode.core-test
   (:require [clojure.test :refer :all]
-            [datomic-schemer.core :refer :all]))
+            [datomic-schematode.core :refer :all]))
 
 (def test-schemas
   ;; [nod] to
@@ -22,7 +22,7 @@
 (deftest expand-fields-test
   (testing "expand-fields"
     (is (= (expand-fields
-            (get-in (apply hash-map datomic-schemer.core-test/test-schemas)
+            (get-in (apply hash-map datomic-schematode.core-test/test-schemas)
                     [:user :attrs]))
            {"group" [:ref #{:many}],
             "status" [:enum #{[:pending :active :inactive :cancelled]}],

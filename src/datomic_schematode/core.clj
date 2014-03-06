@@ -1,4 +1,4 @@
-(ns datomic-schemer.core
+(ns datomic-schematode.core
   (:require [datomic-schema.schema :as dsa]))
 
 (defn expand-fields
@@ -78,6 +78,6 @@
   (defonce db-url "datomic:mem://testdb")
   (d/create-database db-url)
   (map (partial d/transact (d/connect db-url))
-       (schematize datomic-schemer.core-test/test-schemas d/tempid))
+       (schematize datomic-schematode.core-test/test-schemas d/tempid))
 
   )
