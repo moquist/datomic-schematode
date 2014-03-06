@@ -22,7 +22,7 @@ Note: Still pre-release.
 
     Benny always bought the best and piled it high. The sandwich was delicious.
 
-Datomic Schematode takes your concise schema expression and expands upon it, so you can d/transact without explaining everything yourself. It’s better than a talking worm.
+Datomic Schematode takes your concise schema expression and expands upon it, so you can d/transact without explaining every detail yourself. It’s better than a talking worm.
 
 Uses https://github.com/Yuppiechef/datomic-schema .
 
