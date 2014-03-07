@@ -9,9 +9,22 @@
   [:user {:attrs [[:username :string :indexed]
                   [:pwd :string "Hashed password string"]
                   [:email :string :indexed]
+                  [:dob :string :indexed]
+                  [:lastname :string :indexed]
                   [:status :enum [:pending :active :inactive :cancelled]]
                   [:group :ref :many]]
-          :part :app}
+          :part :app
+          :constraints [{:db/ident :user-lastname-dob-unique
+                         :db/fn '{:params [db]
+                                  :code (if (d/q '[:find ?e
+                                                   :where
+                                                   [?e :user/lastname ?ln]
+                                                   [?e :user/dob ?dob]
+                                                   [?dup :user/lastname ?ln]
+                                                   [?dup :user/dob ?dob]
+                                                   [(not= ?e ?dup)]] db)
+                                          "User lastname+dob must be unique."
+                                          nil)}}]}
    :group {:attrs [[:name :string]
                    [:permission :string :many]]
            ;; testing without :part
