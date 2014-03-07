@@ -81,6 +81,33 @@
       schema
       (conj schema partitions))))
 
+(defn- schemaload* [conn sdefs tempid-fn]
+  (doall
+   (map (partial d/transact conn)
+        (schematize sdefs tempid-fn))))
+
+(defn- load-fn* [conn ident f tempid-fn]
+  (d/transact conn [{:db/id (tempid-fn :db.part/user)
+                     :db/ident ident
+                     :db/fn f}]))
+
+(defn- load-fns* [conn fns tempid-fn]
+  (dorun
+   (map (fn load-fns*- [[ident f]]
+          (load-fn* conn ident f tempid-fn))
+        fns)))
+
+(defn schemaload
+  "Transact the specified schema definitions on the specified DB connection."
+  ([conn sdefs]
+     (schemaload conn sdefs d/tempid :constraints :tx-fns))
+  ([conn sdefs tempid-fn & specs]
+     (when (some #{:constraints} specs)
+       (schemaload* conn constraints-schema tempid-fn))
+     (when (some #{:tx-fns} specs)
+       (load-fns* conn tx-fns tempid-fn))
+     (schemaload* conn sdefs tempid-fn)))
+
 (comment
   (def schema-full-sample
     {:db/id #db/id [:db.part/db]
