@@ -16,8 +16,7 @@
   "Starts the current development system."
   []
   (d/create-database db-url)
-  (map (partial d/transact (d/connect db-url))
-       (ds-core/schematize ds-test/test-schemas d/tempid)))
+  (ds-core/schemaload (d/connect db-url) ds-test/test-schemas))
 
 (defn stop!
   "Shuts down and destroys the current development system."
