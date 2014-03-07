@@ -1,5 +1,6 @@
 (ns datomic-schematode.core-test
   (:require [clojure.test :refer :all]
+            [datomic.api :as d]
             [datomic-schematode.core :refer :all]))
 
 (def test-schemas

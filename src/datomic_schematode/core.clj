@@ -8,20 +8,23 @@
                            :part :user}])
 
 (def tx-fns
-  {:schematode-tx (d/function '{:lang :clojure
-                                :doc "Applies all schematode constraints."
-                                :params [db txs]
-                                :code (let [wdb (:db-after (d/with db txs))
-                                            constraints (map (fn schematode-tx1 [[c]]
-                                                               (d/entity wdb c))
-                                                             (d/q '[:find ?e
-                                                                    :where [?e :schematode-constraint/name]] wdb))
-                                            msgs (if (empty? constraints)
-                                                   nil
-                                                   (map (fn schematode-tx2 [c] ((:db/fn c) wdb)) constraints))]
-                                        (if (every? nil? msgs)
-                                          txs
-                                          (throw (Exception. (apply str msgs)))))})})
+  ;; todo: add timing instrumentation and add attributes to the TX so we know the cost of schematode constraints
+  [{:db/ident :schematode-tx
+    :db/fn (d/function '{:lang :clojure
+                         :doc "Applies all schematode constraints."
+                         :params [db txs]
+                         :code (let [wdb (:db-after (d/with db txs))
+                                     constraints (map (fn schematode-tx1 [[c]]
+                                                        (d/entity wdb c))
+                                                      (d/q '[:find ?e
+                                                             :where [?e :schematode-constraint/name]] wdb))
+                                     msgs (if (empty? constraints)
+                                            nil
+                                            (map (fn schematode-tx2 [c] ((:db/fn c) wdb)) constraints))]
+                                 (if (every? nil? msgs)
+                                   txs
+                                   ;; TODO: filter nils out
+                                   (throw (Exception. (apply str msgs)))))})}])
 
 (defn expand-fields
   "fn replacement for datomic-schema.schema/fields.
@@ -86,16 +89,14 @@
    (map (partial d/transact conn)
         (schematize sdefs tempid-fn))))
 
-(defn- load-fn* [conn ident f tempid-fn]
-  (d/transact conn [{:db/id (tempid-fn :db.part/user)
-                     :db/ident ident
-                     :db/fn f}]))
+(defn- load-fn* [conn fnspec tempid-fn]
+  (d/transact conn [(merge {:db/id (tempid-fn :db.part/user)} fnspec)]))
 
-(defn- load-fns* [conn fns tempid-fn]
+(defn- load-fns* [conn fnspecs tempid-fn]
   (dorun
-   (map (fn load-fns*- [[ident f]]
-          (load-fn* conn ident f tempid-fn))
-        fns)))
+   (map (fn load-fns*- [fnspec]
+          (load-fn* conn fnspec tempid-fn))
+        fnspecs)))
 
 (defn schemaload
   "Transact the specified schema definitions on the specified DB connection."
