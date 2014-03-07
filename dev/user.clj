@@ -92,7 +92,7 @@
                 :schematode-constraint/name "yeep"
                 :db/fn (d/function '{:lang :clojure
                                      :params [db]
-                                     :code true})}])
+                                     :code (str "Yo, total failure.")})}])
 
   (d/transact (d/connect db-url)
               [[:schematode-tx
