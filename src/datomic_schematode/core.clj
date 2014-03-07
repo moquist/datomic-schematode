@@ -1,5 +1,27 @@
 (ns datomic-schematode.core
-  (:require [datomic-schema.schema :as dsa]))
+  (:require [datomic.api :as d]
+            [datomic-schema.schema :as dsa]))
+
+(def constraints-schema
+  [:schematode-constraint {:attrs [[:name :string :indexed]
+                                   [:desc :string]]
+                           :part :user}])
+
+(def tx-fns
+  {:schematode-tx (d/function '{:lang :clojure
+                                :doc "Applies all schematode constraints."
+                                :params [db txs]
+                                :code (let [wdb (:db-after (d/with db txs))
+                                            constraints (map (fn schematode-tx1 [[c]]
+                                                               (d/entity wdb c))
+                                                             (d/q '[:find ?e
+                                                                    :where [?e :schematode-constraint/name]] wdb))
+                                            msgs (if (empty? constraints)
+                                                   nil
+                                                   (map (fn schematode-tx2 [c] ((:db/fn c) wdb)) constraints))]
+                                        (if (every? nil? msgs)
+                                          txs
+                                          (throw (Exception. (apply str msgs)))))})})
 
 (defn expand-fields
   "fn replacement for datomic-schema.schema/fields.
