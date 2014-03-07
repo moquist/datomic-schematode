@@ -63,16 +63,29 @@
                 :db/fn (d/function '{:lang :clojure
                                      :params [db txs]
                                      :code (let [wdb (:db-after (d/with db txs))
-                                                 constraints (d/q '[:find ?e
-                                                                    :where [?e :schematode-constraint/name]] wdb)]
-                                             (if (or (empty? constraints)
-                                                     (every? true?
-                                                             (map (fn schematode-tx- [[c]]
-                                                                    (let [c (d/entity wdb c)]
-                                                                      ((:db/fn c) wdb)))
-                                                                  constraints)))
+                                                 constraints (map (fn schematode-tx1 [[c]]
+                                                                    (d/entity wdb c))
+                                                                  (d/q '[:find ?e
+                                                                         :where [?e :schematode-constraint/name]] wdb))
+                                                 msgs (if (empty? constraints)
+                                                        nil
+                                                        (map (fn schematode-tx2 [c] ((:db/fn c) wdb)) constraints))]
+                                             (if (every? nil? msgs)
                                                txs
-                                               (throw (Exception. "Bad TX. Bad!"))))})}])
+                                               (throw (Exception. (apply str msgs)))))})}])
+
+  #_(let [wdb (:db-after (d/with db txs))
+          constraints (d/q '[:find ?e
+                             :where [?e :schematode-constraint/name]] wdb)
+          constraints (map (fn schematode-tx1 [[c]]
+                             (d/entity wdb c)) constraints)]
+      (if (or (empty? constraints)
+              (every? true?
+                      (map (fn schematode-tx2 [c]
+                             ((:db/fn c) wdb))
+                           constraints)))
+        txs
+        (throw (Exception. "Bad TX. Bad!"))))
 
   (d/transact (d/connect db-url)
               [{:db/id (d/tempid :db.part/user)
