@@ -153,10 +153,4 @@
      :db/index [true false]
      :db/isComponent [true nil]
      :db/noHistory [true false]})
-
-  (defonce db-url "datomic:mem://testdb")
-  (d/create-database db-url)
-  (map (partial d/transact (d/connect db-url))
-       (schematize datomic-schematode.core-test/test-schemas d/tempid))
-
   )
