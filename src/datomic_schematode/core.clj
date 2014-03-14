@@ -8,7 +8,10 @@
                            :part :user}])
 
 (def tx-fns
-  ;; todo: add timing instrumentation and add attributes to the TX so we know the cost of schematode constraints
+  ;; TODO: add timing instrumentation and add attributes to the TX so we know the cost of schematode constraints
+  ;;     * look at timbre, maybe
+  ;;     * criterium seems more appropriate for this: https://github.com/hugoduncan/criterium
+  ;; TODO: support warnings without exceptions
   [{:db/ident :schematode-tx
     :db/fn (d/function '{:lang :clojure
                          :doc "Applies all schematode constraints."
