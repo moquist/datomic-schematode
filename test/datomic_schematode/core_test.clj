@@ -1,11 +1,10 @@
 (ns datomic-schematode.core-test
   (:require [clojure.test :refer :all]
             [datomic.api :as d]
-            [datomic-schematode.core :refer :all]))
+            [datomic-schematode.core :refer :all]
+            [datomic-schematode.constraints :refer :all]))
 
 (def test-schemas
-  ;; [nod] to
-  ;; https://github.com/Yuppiechef/datomic-schema/blob/master/README.md
   [:user {:attrs [[:username :string :indexed]
                   [:pwd :string "Hashed password string"]
                   [:email :string :indexed]
@@ -14,17 +13,7 @@
                   [:status :enum [:pending :active :inactive :cancelled]]
                   [:group :ref :many]]
           :part :app
-          :constraints [{:db/ident :user-lastname-dob-unique
-                         :db/fn '{:params [db]
-                                  :code (if (d/q '[:find ?e
-                                                   :where
-                                                   [?e :user/lastname ?ln]
-                                                   [?e :user/dob ?dob]
-                                                   [?dup :user/lastname ?ln]
-                                                   [?dup :user/dob ?dob]
-                                                   [(not= ?e ?dup)]] db)
-                                          "User lastname+dob must be unique."
-                                          nil)}}]}
+          :schematode-constraints [(unique :user :lastname :dob)]}
    :group {:attrs [[:name :string]
                    [:permission :string :many]]
            ;; testing without :part
