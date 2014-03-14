@@ -73,41 +73,67 @@
                    (map (fn partize- [[_ s]] (keyword "db.part" (name (or (:part s) "user"))))
                         (chunk-schemas sdefs))))))
 
+(defn extract-dbfns
+  "Extract db/fn specs from sdefs."
+  [sdefs]
+  (flatten
+   (filter (fn extract-dbfns- [f] (not (nil? f)))
+           (map :schematode-constraints sdefs))))
+
+(defn dbfnize
+  "Process sdefs and return transactable db/fn entity definitions."
+  [sdefs tempid-fn]
+  (let [fns (extract-dbfns sdefs)]
+    (map (fn dbfnize- [f]
+           (merge {:db/id (tempid-fn :db.part/user)} f))
+         fns)))
+
 (defn schematize
   "Transform a seq of :namespace,schema pairs into transactable
   datomic schema."
   [sdefs tempid-fn]
   (let [schema (map (partial dsa/generate-schema tempid-fn)
                     (expand-schemas sdefs))
-        partitions (partize sdefs tempid-fn)]
+        partitions (partize sdefs tempid-fn)
+        fns (dbfnize () sdefs)]
     (if (empty? partitions)
       schema
       (conj schema partitions))))
 
-(defn- schemaload* [conn sdefs tempid-fn]
-  (doall
-   (map (partial d/transact conn)
-        (schematize sdefs tempid-fn))))
-
-(defn- load-fn* [conn fnspec tempid-fn]
+(defn- load-fn*
+  "Temporary fn to load up a tx-fn.
+   TODO: merge tx-fns into sdefs and load via load-schema*"
+  [conn fnspec tempid-fn]
   (d/transact conn [(merge {:db/id (tempid-fn :db.part/user)} fnspec)]))
 
-(defn- load-fns* [conn fnspecs tempid-fn]
-  (dorun
+(defn- load-fns*
+  "Temporary fn to load up tx-fns.
+   TODO: merge tx-fns into sdefs and load via load-schema*"
+  [conn fnspecs tempid-fn]
+  (doall
    (map (fn load-fns*- [fnspec]
           (load-fn* conn fnspec tempid-fn))
         fnspecs)))
 
-(defn schemaload
+(defn- load-schema*
+  "Transact sdefs into conn, using tempid-fn.
+   Return seq of tx promises."
+  [conn sdefs tempid-fn]
+  (doall (map (partial d/transact conn)
+              (conj (schematize sdefs tempid-fn)
+                    (dbfnize sdefs tempid-fn)))))
+
+;; TODO: handle any resource that can be opened by io/reader.
+(defn load-schema
   "Transact the specified schema definitions on the specified DB connection."
   ([conn sdefs]
-     (schemaload conn sdefs d/tempid :constraints :tx-fns))
-  ([conn sdefs tempid-fn & specs]
-     (when (some #{:constraints} specs)
-       (schemaload* conn constraints-schema tempid-fn))
-     (when (some #{:tx-fns} specs)
+     (load-schema conn sdefs d/tempid :init-constraints true :init-tx-fns true))
+  ([conn sdefs tempid-fn & {:keys [init-constraints init-tx-fns]}]
+     (when init-constraints
+       (load-schema* conn constraints-schema tempid-fn))
+     (when init-tx-fns
        (load-fns* conn tx-fns tempid-fn))
-     (schemaload* conn sdefs tempid-fn)))
+     (load-schema* conn sdefs tempid-fn)))
 
 (comment
   (def schema-full-sample

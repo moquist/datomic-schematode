@@ -17,7 +17,7 @@
   "Starts the current development system."
   []
   (d/create-database db-url)
-  (ds-core/schemaload (d/connect db-url) ds-test/test-schemas))
+  (ds-core/load-schema (d/connect db-url) ds-test/test-schemas))
 
 (defn stop!
   "Shuts down and destroys the current development system."
