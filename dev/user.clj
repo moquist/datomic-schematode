@@ -45,6 +45,14 @@
   [query]
   (pprint (touch-that query)))
 
+(defn ds-tx-
+  "Transact the given entity map using :schematode-tx"
+  [attrsmap]
+  (d/transact
+   (d/connect db-url)
+   [[:schematode-tx [(merge {:db/id (d/tempid :db.part/user)}
+                            attrsmap)]]]))
+
 (comment
   (d/transact (d/connect db-url) [{:db/id #db/id[:db.part/user] :user/username "fleem"}])
   (d/transact (d/connect db-url) [{:db/id #db/id[:db.part/user] :user/username "fleem2" :user/pwd "hash123"}])
