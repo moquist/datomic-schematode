@@ -45,7 +45,8 @@ First, you need to express your schemas. Here's a simple, single schema for a de
 
 Next, load your schema into datomic:
 ```clj
-(ds-core/load-schema! db-conn schema1)
+datomic-schematode.examples.deli-menu> (ds-core/load-schema! db-conn schema1)
+;; => (#<promise$settable_future$reify__4958@6af8f1e9: {:db-before datomic.db.Db@72124995, :db-after datomic.db.Db@c5df3f53, :tx-data [#Datum{:e 13194139534316 :a 50 :v #inst "2014-03-15T04:23:47.235-00:00" :tx 13194139534316 :added true}], :tempids {}}> ...)
 ```
 
 Now transact some facts using your new schema:
