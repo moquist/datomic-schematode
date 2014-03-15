@@ -80,3 +80,4 @@ datomic-schematode.examples.deli-menu> (let [db (d/db db-conn)
 
 TODO before release:
 * Add vanilla support for required attrs.
+* Document schematode-tx and general constraints support.
