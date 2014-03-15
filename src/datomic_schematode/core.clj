@@ -105,20 +105,20 @@
 
 (defn- load-fn*
   "Temporary fn to load up a tx-fn.
-   TODO: merge tx-fns into sdefs and load via load-schema*"
+   TODO: merge tx-fns into sdefs and load via load-schema!*"
   [conn fnspec tempid-fn]
   (d/transact conn [(merge {:db/id (tempid-fn :db.part/user)} fnspec)]))
 
 (defn- load-fns*
   "Temporary fn to load up tx-fns.
-   TODO: merge tx-fns into sdefs and load via load-schema*"
+   TODO: merge tx-fns into sdefs and load via load-schema!*"
   [conn fnspecs tempid-fn]
   (doall
    (map (fn load-fns*- [fnspec]
           (load-fn* conn fnspec tempid-fn))
         fnspecs)))
 
-(defn- load-schema*
+(defn- load-schema!*
   "Transact sdefs into conn, using tempid-fn.
    Return seq of tx promises."
   [conn sdefs tempid-fn]
@@ -127,16 +127,16 @@
                     (dbfnize sdefs tempid-fn)))))
 
 ;; TODO: handle any resource that can be opened by io/reader.
-(defn load-schema
+(defn load-schema!
   "Transact the specified schema definitions on the specified DB connection."
   ([conn sdefs]
-     (load-schema conn sdefs d/tempid :init-constraints true :init-tx-fns true))
+     (load-schema! conn sdefs d/tempid :init-constraints true :init-tx-fns true))
   ([conn sdefs tempid-fn & {:keys [init-constraints init-tx-fns]}]
      (when init-constraints
-       (load-schema* conn constraints-schema tempid-fn))
+       (load-schema!* conn constraints-schema tempid-fn))
      (when init-tx-fns
        (load-fns* conn tx-fns tempid-fn))
-     (load-schema* conn sdefs tempid-fn)))
+     (load-schema!* conn sdefs tempid-fn)))
 
 (comment
   (def schema-full-sample
