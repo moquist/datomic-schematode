@@ -8,4 +8,5 @@
   :profiles {:dev
              {:source-paths ["dev"]
               :dependencies [[org.clojure/tools.namespace "0.2.4"]
-                             [com.datomic/datomic-free "0.9.4572"]]}})
+                             [com.datomic/datomic-free "0.9.4572"]]}}
+  :plugins [[lein-cloverage "1.0.2"]])
