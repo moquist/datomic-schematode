@@ -55,10 +55,9 @@
   [namespace & attrs]
   (let [namespace (name namespace)
         [ident n desc failure-msg] (namify :unique namespace attrs)
-        where-clauses (unique-attrs->clauses namespace attrs)
-        ;; TODO: keep the duplicated attr values from the query result
-        ;; and append them to the failure message.
-        query {:find ['?e] :where where-clauses}]
+        where-clauses (unique-attrs->clauses namespace attrs)]
+    ;; TODO: keep the duplicated attr values from the query result
+    ;; and append them to the failure message.
     {:db/ident ident
      :schematode-constraint/desc desc
      :schematode-constraint/name n
