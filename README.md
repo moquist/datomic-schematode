@@ -30,7 +30,7 @@ Uses https://github.com/Yuppiechef/datomic-schema .
 *These instructions are incomplete and preliminary.*
 
 In the following example, a few details are ellided. Please see
-test/datomic_schematode/examples/deli_menu.clj for the full example code.
+```test/datomic_schematode/examples/deli_menu.clj``` for the full example code.
 
 First, you need to express your schemas. Here's a simple, single schema for a deli menu:
 ```clj
