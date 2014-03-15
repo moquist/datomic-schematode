@@ -51,25 +51,31 @@ datomic-schematode.examples.deli-menu> (ds-core/load-schema! db-conn schema1)
 
 Now transact some facts using your new schema:
 ```clj
-(d/transact db-conn
-            [{:db/id #db/id[:db.part/user]
-              :sandwich/bread-name "focaccia"
-              :sandwich/meat "corned beef"
-              :sandwich/needs-toothpick true}
-             {:db/id #db/id[:db.part/user]
-              :sandwich/bread-name "rye"
-              :sandwich/meat "turky"
-              :sandwich/needs-toothpick false}])
+datomic-schematode.examples.deli-menu> (d/transact db-conn
+                                        [{:db/id #db/id[:db.part/user]
+                                          :sandwich/bread-name "focaccia"
+                                          :sandwich/meat "corned beef"
+                                          :sandwich/needs-toothpick true}
+                                         {:db/id #db/id[:db.part/user]
+                                          :sandwich/bread-name "rye"
+                                          :sandwich/meat "turky"
+                                          :sandwich/needs-toothpick false}])
+;; => #<promise$settable_future$reify__4958@65876428: {:db-before datomic.db.Db@bc569020, :db-after datomic.db.Db@eb44b720, :tx-data ...
 ```
 
-Get your facts back out:
+Now you can get your facts back out:
 ```clj
-(let [db (d/db db-conn)]
-  (pprint (map #(d/touch
-                 (d/entity db
-                           (first %)))
-               (d/q '[:find ?e
-                      :where [?e :sandwich/bread-name]] db))))
+datomic-schematode.examples.deli-menu> (let [db (d/db db-conn)
+                                             entities (map #(d/touch
+                                                             (d/entity db
+                                                                       (first %)))
+                                                           (d/q '[:find ?e
+                                                                  :where [?e :sandwich/bread-name]] db))]
+                                         (pprint entities)
+                                         (count entities))
+;; => ({:sandwich/needs-toothpick false, :sandwich/meat "turky", :sandwich/bread-name "rye", :db/id 17592186045424}
+;; =>  {:sandwich/needs-toothpick true, :sandwich/meat "corned beef", :sandwich/bread-name "focaccia", :db/id 17592186045423})
+;; => 2
 ```
 
 TODO before release:
