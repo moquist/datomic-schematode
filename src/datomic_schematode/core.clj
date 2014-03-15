@@ -107,9 +107,9 @@
      (load-schema! conn sdefs d/tempid :init-constraints true :init-tx-fns true))
   ([conn sdefs tempid-fn & {:keys [init-constraints init-tx-fns]}]
      (when init-constraints
-       (load-schema!* conn constraints-schema tempid-fn))
+       (load-schema!* conn dsc-support/constraints-schema tempid-fn))
      (when init-tx-fns
-       (load-fns* conn tx-fns tempid-fn))
+       (load-fns* conn dsc-support/tx-fns tempid-fn))
      (load-schema!* conn sdefs tempid-fn)))
 
 (comment
