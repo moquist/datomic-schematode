@@ -68,10 +68,6 @@
                                   ~failure-msg)})}))
 
 (comment
-  (d/transact (d/connect db-url) [[:schematode-tx [{:db/id (d/tempid :db.part/user)
-                                                    :user/username "fflam"
-                                                    :user/lastname "flam"
-                                                    :user/dob "2010-01-01"}]]])
 
   (pprint (map #(d/touch
                  (d/entity
