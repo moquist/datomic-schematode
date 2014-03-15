@@ -27,11 +27,13 @@
                 :sandwich/needs-toothpick false}]))
 
 (defn step3 []
-  (let [db (d/db db-conn)]
-    (pprint (map #(d/touch
-                   (d/entity db
-                             (first %)))
-                 (d/q '[:find ?e
-                        :where [?e :sandwich/bread-name]] db)))))
+  (let [db (d/db db-conn)
+        entities (map #(d/touch
+                        (d/entity db
+                                  (first %)))
+                      (d/q '[:find ?e
+                             :where [?e :sandwich/bread-name]] db))]
+    (pprint entities)
+    (count entities)))
 
 
