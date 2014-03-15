@@ -2,7 +2,10 @@
   (:require [clojure.test :refer :all]
             [datomic.api :as d]
             [datomic-schematode.core :as ds-core]
-            [datomic-schematode.constraints :as ds-constraints]))
+            [datomic-schematode.constraints :as ds-constraints]
+            [datomic-schematode.core-test.config :as config]))
+
+(use-fixtures :once config/with-db)
 
 (def test-schemas
   [:user {:attrs [[:username :string :indexed]
