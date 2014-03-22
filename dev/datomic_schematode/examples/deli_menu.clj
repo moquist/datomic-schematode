@@ -8,9 +8,9 @@
 (def db-conn (d/connect db-url))
 
 (def schema1
-  [:sandwich {:attrs [[:bread-name :string :indexed]
-                      [:meat :string "Many people like meat on their sandwiches"]
-                      [:needs-toothpick :boolean]]}])
+  [[:sandwich {:attrs [[:bread-name :string :indexed]
+                       [:meat :string "Many people like meat on their sandwiches"]
+                       [:needs-toothpick :boolean]]}]])
 
 (defn step1 []
   (ds-core/load-schema! db-conn schema1))
