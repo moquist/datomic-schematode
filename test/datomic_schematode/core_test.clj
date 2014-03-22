@@ -8,24 +8,24 @@
 (use-fixtures :once config/with-db)
 
 (def test-schemas
-  [:user {:attrs [[:username :string :indexed]
-                  [:pwd :string "Hashed password string"]
-                  [:email :string :indexed]
-                  [:dob :string :indexed]
-                  [:lastname :string :indexed]
-                  [:status :enum [:pending :active :inactive :cancelled]]
-                  [:group :ref :many]]
-          :part :app
-          :schematode-constraints [(ds-constraints/unique :user :lastname :dob)]}
-   :group {:attrs [[:name :string]
-                   [:permission :string :many]]
-           ;; testing without :part
-           }])
+  [[:user {:attrs [[:username :string :indexed]
+                   [:pwd :string "Hashed password string"]
+                   [:email :string :indexed]
+                   [:dob :string :indexed]
+                   [:lastname :string :indexed]
+                   [:status :enum [:pending :active :inactive :cancelled]]
+                   [:group :ref :many]]
+           :part :app
+           :dbfns [(ds-constraints/unique :user :lastname :dob)]}]
+   [:group {:attrs [[:name :string]
+                    [:permission :string :many]]
+            ;; testing without :part
+            }]])
 
 (deftest expand-fields-test
   (testing "expand-fields"
     (is (= (ds-core/expand-fields
-            (get-in (apply hash-map test-schemas)
+            (get-in (apply hash-map (flatten test-schemas))
                     [:user :attrs]))
            {"group" [:ref #{:many}], "status" [:enum #{[:pending :active :inactive :cancelled]}], "lastname" [:string #{:indexed}], "dob" [:string #{:indexed}], "email" [:string #{:indexed}], "pwd" [:string #{"Hashed password string"}], "username" [:string #{:indexed}]}))))
 
@@ -45,10 +45,10 @@
     ;; the only way around it that I could think of. Anybody have a
     ;; better idea?
     (is (= (str (sort (into [] (ds-constraints/unique :snowflake :size :shape :favorite-dolphin))))
-           "([:db/fn #db/fn{:code \"(if (clojure.core/empty? (datomic.api/q (quote {:where ([?e :snowflake/size ?snowflake-size] [?e :snowflake/shape ?snowflake-shape] [?e :snowflake/favorite-dolphin ?snowflake-favorite-dolphin] [?dup :snowflake/size ?snowflake-size] [?dup :snowflake/shape ?snowflake-shape] [?dup :snowflake/favorite-dolphin ?snowflake-favorite-dolphin] [(not= ?e ?dup)]), :find [?e]}) db)) nil \\\"Uniqueness failed for [:snowflake/size :snowflake/shape :snowflake/favorite-dolphin]\\\")\", :params [db], :requires [], :imports [], :lang :clojure}] [:db/ident :schematode-constraint-unique-snowflake-size-shape-favorite-dolphin] [:schematode-constraint/desc \"Auto-generated constraint: unique [:snowflake/size :snowflake/shape :snowflake/favorite-dolphin]\"] [:schematode-constraint/name \"schematode-constraint-unique [:snowflake/size :snowflake/shape :snowflake/favorite-dolphin]\"])"))))
+           "([:db/fn #db/fn{:code \"(if (clojure.core/empty? (datomic.api/q (quote {:where ([?e :snowflake/size ?snowflake-size] [?e :snowflake/shape ?snowflake-shape] [?e :snowflake/favorite-dolphin ?snowflake-favorite-dolphin] [?dup :snowflake/size ?snowflake-size] [?dup :snowflake/shape ?snowflake-shape] [?dup :snowflake/favorite-dolphin ?snowflake-favorite-dolphin] [(not= ?e ?dup)]), :find [?e]}) db)) nil \\\"Uniqueness failed for [:snowflake/size :snowflake/shape :snowflake/favorite-dolphin]\\\")\", :params [db], :requires [], :imports [], :lang :clojure}] [:db/ident :schematode-constraint-fn-unique-snowflake-size-shape-favorite-dolphin] [:schematode-constraint-fn/active true] [:schematode-constraint-fn/desc \"Auto-generated constraint: unique [:snowflake/size :snowflake/shape :snowflake/favorite-dolphin]\"] [:schematode-constraint-fn/name \"schematode-constraint-fn-unique [:snowflake/size :snowflake/shape :snowflake/favorite-dolphin]\"])"))))
 
 (deftest load-schema!-test
   (testing "load-schema!"
     (is (= (map #(keys (deref %))
-                (ds-core/load-schema! (d/connect config/db-url) [:u {:attrs [[:a :string]]}]))
+                (ds-core/load-schema! (d/connect config/db-url) [[:u {:attrs [[:a :string]]}]]))
            '((:db-before :db-after :tx-data :tempids) (:db-before :db-after :tx-data :tempids))))))

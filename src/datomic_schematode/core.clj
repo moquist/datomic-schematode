@@ -37,7 +37,7 @@
                      :basetype (keyword sname)
                      :fields attrs})))
           []
-          (chunk-schemas sdefs)))
+          sdefs))
 
 (defn partize
   "Transform a seq of :namespace,schema pairs into a seq of
@@ -48,17 +48,19 @@
           (remove #{:db.part/user}
                   (distinct
                    (map (fn partize- [[_ s]] (keyword "db.part" (name (or (:part s) "user"))))
-                        (chunk-schemas sdefs))))))
+                        sdefs)))))
 
 (defn extract-dbfns
   "Extract db/fn specs from sdefs."
   [sdefs]
   (flatten
-   (filter (fn extract-dbfns- [f] (not (nil? f)))
-           (map :schematode-constraints sdefs))))
+   (remove nil?
+           (map (fn extract-dbfns- [[_ sdef]] (:dbfns sdef))
+                sdefs))))
 
 (defn dbfnize
-  "Process sdefs and return transactable db/fn entity definitions."
+  "Process sdefs and return a seq of transactable db/fn entity
+   definitions."
   [sdefs tempid-fn]
   (let [fns (extract-dbfns sdefs)]
     (map (fn dbfnize- [f]
