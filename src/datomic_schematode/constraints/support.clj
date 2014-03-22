@@ -76,8 +76,10 @@
                    txs (conj txs {:db/id txid :schematode-constraint/elapsed-msec et})]
                (if (nil? result)
                  txs
-                 (if (= :warn enforcement)
-                   (conj txs {:db/id txid
-                              :schematode-constraint/messages (apply str result)})
-                   (throw (Exception. (apply str result))))))})}])
+                 (let [result (map (fn schematode-tx- [r] [r]) result)
+                       result (reduce str result)]
+                   (if (= :warn enforcement)
+                     (conj txs {:db/id txid
+                                :schematode-constraint/messages result})
+                     (throw (Exception. result))))))})}])
 
