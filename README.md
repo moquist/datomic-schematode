@@ -38,9 +38,13 @@ First, you need to express your schemas. Here's a simple, single schema for a de
   (:require [datomic-schematode.core :as ds-core]))
 
 (def schema1
-  [[:sandwich {:attrs [[:bread-name :string :indexed]
+  [[:sandwich {:attrs [[:name :string :indexed]
+                       [:bread :enum [:focaccia :wheat :maize :rice] :indexed]
                        [:meat :string "Many people like meat on their sandwiches"]
-                       [:needs-toothpick :boolean]]}]])
+                       [:needs-toothpick :boolean]]}]
+   [:salad {:attrs [[:name :string :indexed]
+                    [:base :enum [:lettuce :spinach :pasta :unicorns] :indexed]
+                    [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}]])
 ```
 
 Next, load your schema into datomic:
@@ -53,13 +57,19 @@ Now transact some facts using your new schema:
 ```clj
 datomic-schematode.examples.deli-menu> (d/transact db-conn
                                                    [{:db/id #db/id[:db.part/user]
-                                                     :sandwich/bread-name "focaccia"
+                                                     :sandwich/name "Norville's #1"
+                                                     :sandwich/bread :sandwich.bread/focaccia
                                                      :sandwich/meat "corned beef"
                                                      :sandwich/needs-toothpick true}
                                                     {:db/id #db/id[:db.part/user]
-                                                     :sandwich/bread-name "rye"
-                                                     :sandwich/meat "turky"
-                                                     :sandwich/needs-toothpick false}])
+                                                     :sandwich/name "Thanksgiving Leftovers"
+                                                     :sandwich/bread :sandwich.bread/maize
+                                                     :sandwich/meat "turkey"
+                                                     :sandwich/needs-toothpick false}
+                                                    {:db/id #db/id[:db.part/user]
+                                                     :salad/name "Ceasar"
+                                                     :salad/base :salad.base/lettuce
+                                                     :salad/dressing :salad.dressing/ceasar}])
 ;; => #<promise$settable_future$reify__4958@65876428: {:db-before datomic.db.Db@bc569020, :db-after datomic.db.Db@eb44b720, :tx-data ...
 ```
 
@@ -70,11 +80,11 @@ datomic-schematode.examples.deli-menu> (let [db (d/db db-conn)
                                                              (d/entity db
                                                                        (first %)))
                                                            (d/q '[:find ?e
-                                                                  :where [?e :sandwich/bread-name]] db))]
+                                                                  :where [?e :sandwich/bread]] db))]
                                          (pprint entities)
                                          (count entities))
-;; => ({:sandwich/needs-toothpick false, :sandwich/meat "turky", :sandwich/bread-name "rye", :db/id 17592186045424}
-;; =>  {:sandwich/needs-toothpick true, :sandwich/meat "corned beef", :sandwich/bread-name "focaccia", :db/id 17592186045423})
+;; => ({:sandwich/needs-toothpick true, :sandwich/meat "corned beef", :sandwich/bread :sandwich.bread/focaccia, :sandwich/name "Norville's #1", :db/id 17592186045433}
+;; =>  {:sandwich/needs-toothpick false, :sandwich/meat "turkey", :sandwich/bread :sandwich.bread/maize, :sandwich/name "Thanksgiving Leftovers", :db/id 17592186045434})
 ;; => 2
 ```
 
