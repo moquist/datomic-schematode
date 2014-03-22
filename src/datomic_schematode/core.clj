@@ -74,6 +74,7 @@
   (let [schema (map (partial dsa/generate-schema tempid-fn)
                     (expand-schemas sdefs))
         partitions (partize sdefs tempid-fn)
+        ;; TODO: handle fns here
         fns (dbfnize () sdefs)]
     (if (empty? partitions)
       schema

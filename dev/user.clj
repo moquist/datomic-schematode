@@ -45,133 +45,32 @@
   [query]
   (pprint (touch-that query)))
 
-(defn ds-tx-
+(defn tx
   "Transact the given entity map using :schematode-tx"
-  [attrsmap]
+  [warn? attrsmap]
   (d/transact
    (d/connect db-url)
-   [[:schematode-tx [(merge {:db/id (d/tempid :db.part/user)}
-                            attrsmap)]]]))
+   [[:schematode-tx warn? [(merge {:db/id (d/tempid :db.part/user)}
+                                  attrsmap)]]]))
 
 (comment
-  (d/transact (d/connect db-url) [{:db/id #db/id[:db.part/user] :user/username "fleem"}])
-  (d/transact (d/connect db-url) [{:db/id #db/id[:db.part/user] :user/username "fleem2" :user/pwd "hash123"}])
+  (tx :warn {:user/username "mim" :user/dob "2012-01-01" :user/lastname "marp"})
+  (ptouch-that '[:find ?e :where [?e :user/username]])
 
-  (d/transact (d/connect db-url)
-              [{:db/id (d/tempid :db.part/user)
-                :db/ident :hello2
-                :db/fn (d/function '{:lang :clojure
-                                     :params [name]
-                                     :code (str "Hello, " name)})}])
+  (tx-warn {:user/username "jim" :user/lastname "im" :user/dob "2001-01-01"})
+  (ptouch-that '[:find ?e :where [?e :schematode-constraint/messages]])
 
-  ;;; Here is the fledgling alternate tx fn that handles constraints.
-  (d/transact (d/connect db-url)
-              [{:db/id (d/tempid :db.part/user)
-                :db/ident :schematode-tx
-                :db/fn (d/function '{:lang :clojure
-                                     :params [db txs]
-                                     :code (let [wdb (:db-after (d/with db txs))
-                                                 constraints (map (fn schematode-tx1 [[c]]
-                                                                    (d/entity wdb c))
-                                                                  (d/q '[:find ?e
-                                                                         :where [?e :schematode-constraint/name]] wdb))
-                                                 msgs (if (empty? constraints)
-                                                        nil
-                                                        (map (fn schematode-tx2 [c] ((:db/fn c) wdb)) constraints))]
-                                             (if (every? nil? msgs)
-                                               txs
-                                               (throw (Exception. (apply str msgs)))))})}])
+  (def m (:db/fn (d/entity (d/db db-conn) :schematode-tx*)))
+  (m (d/db db-conn) [{:db/id (d/tempid :db.part/user)
+                      :user/username "jim"
+                      :user/lastname "im"
+                      :user/dob "2001-01-01"}
+                     {:db/id (d/tempid :db.part/user)
+                      :user/username "jim"
+                      :user/lastname "im"
+                      :user/dob "2001-01-01"}])
 
-  #_(let [wdb (:db-after (d/with db txs))
-          constraints (d/q '[:find ?e
-                             :where [?e :schematode-constraint/name]] wdb)
-          constraints (map (fn schematode-tx1 [[c]]
-                             (d/entity wdb c)) constraints)]
-      (if (or (empty? constraints)
-              (every? true?
-                      (map (fn schematode-tx2 [c]
-                             ((:db/fn c) wdb))
-                           constraints)))
-        txs
-        (throw (Exception. "Bad TX. Bad!"))))
-
-  (d/transact (d/connect db-url)
-              [{:db/id (d/tempid :db.part/user)
-                :db/ident :yeep
-                :schematode-constraint/name "yeep"
-                :db/fn (d/function '{:lang :clojure
-                                     :params [db]
-                                     :code (str "Yo, total failure.")})}])
-
-  (d/transact (d/connect db-url)
-              [[:schematode-tx
-                [{:db/id #db/id[:db.part/user]
-                  :user/username "jim2"}]]])
-
-  (d/with (d/db (d/connect db-url))
-          [{:db/id #db/id[:db.part/user]
-            :user/username "fleem3"}])
-
-  (d/touch (d/entity (d/db (d/connect db-url))
-                     (ffirst (d/q '[:find ?e :where [?e :user/username]]
-                                  (d/db (d/connect db-url))))))
-
-  (def dbval (d/db (d/connect db-url)))
-  ;; retrieve function from db and call it
-  (def hello-from-db (d/entity dbval :hello))
-  (:db/doc hello-from-db)
-  ((:db/fn hello-from-db) "John")
-
-  ;;add a transaction function called add-doc
-  (d/transact (d/connect db-url)
-              [{:db/id #db/id [:db.part/user]
-                :db/ident :add-doc
-                :db/fn (d/function '{:lang "java"
-                                     :params [db e doc]
-                                     :code "return list(list(\":db/add\", e, \":db/doc\", doc));"})}])
-
-  (d/transact (d/connect db-url)
-              [{:db/id #db/id [:db.part/user] :db/ident :foo}])
-
-  (d/transact (d/connect db-url)
-              [[:add-doc :foo "this is foo's doc"]])
-
-  (d/touch (d/entity
-            (d/db (d/connect db-url))
-            :foo))
-
-  (d/transact (d/connect db-url)
-              [{:db/id #db/id [:db.part/user]
-                :db/ident :add-user
-                :db/fn (d/function '{:lang "clojure"
-                                     :params [db u]
-                                     :code
-                                     (if (:user/username u)
-                                       [(merge u {:db/id #db/id [:db.part/user]})]
-                                       (throw (Exception. "Bad username. Bad!")))})}])
-
-  (d/transact (d/connect db-url)
-              [{:db/id #db/id [:db.part/user]
-                :db/ident :add-user
-                :db/fn (d/function '{:lang "clojure"
-                                     :params [db u]
-                                     :code
-                                     (if (:user/username u)
-                                       [(merge u {:db/id #db/id [:db.part/user]})]
-                                       (throw (Exception. "Bad username. Bad!")))})}])
-
-  (d/transact (d/connect db-url)
-              [{:db/id #db/id [:db.part/user] :db/ident :foo8}])
-
-  (d/transact (d/connect db-url)
-              [[:add-user :foo8 "this is fooboo's doc"]])
-
-  (d/touch (d/entity
-            (d/db (d/connect db-url))
-            :foo8))
-
-  (d/entity (d/db (d/connect db-url)) :foo8)
-
+  ;;;; other stuff
   (def datomic-conn (d/connect db-url))
   (def db (d/db datomic-conn))
   (def user (d/entity (d/db datomic-conn) :add-user))
@@ -245,15 +144,6 @@
                        (d/entity (d/as-of db (ffirst changes)))
                        :db/txInstant)})))
   
-
-  (d/transact (d/connect db-url)
-              [{:db/id #db/id[:db.part/user]
-                :user/username "fleem2"
-                :user/pwd "password 2secrets!"
-                :user/email "some2@where.com"
-                :db/fn (d/function '{:lang :clojure
-                                     :params [name]
-                                     :code (str "Hello, " name)})}])
 
   (d/transact (d/connect db-url)
               [{:db/id #db/id [:db.part/user]
