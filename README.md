@@ -32,7 +32,7 @@ Uses https://github.com/Yuppiechef/datomic-schema .
 In the following example, a few details are ellided. Please see
 ```dev/datomic_schematode/examples/deli_menu.clj``` for the full example code.
 
-First, you need to express your schemas. Here's a simple, single schema for a deli menu:
+#### First, you need to express your schemas. Here's a simple, single schema for a deli menu:
 ```clj
 (ns datomic-schematode.examples.deli-menu
   (:require [datomic-schematode.core :as ds-core]
@@ -47,14 +47,12 @@ First, you need to express your schemas. Here's a simple, single schema for a de
                     [:base :enum [:lettuce :spinach :pasta :unicorns] :indexed]
                     [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}]])
 ```
-
-Next, load your schema into datomic:
+#### Next, load your schema into datomic:
 ```clj
 datomic-schematode.examples.deli-menu> (ds-core/load-schema! db-conn schema1)
 ;; => (#<promise$settable_future$reify__4958@6af8f1e9: {:db-before datomic.db.Db@72124995, :db-after datomic.db.Db@c5df3f53, :tx-data [#Datum{:e 13194139534316 :a 50 :v #inst "2014-03-15T04:23:47.235-00:00" :tx 13194139534316 :added true}], :tempids {}}> ...)
 ```
-
-Now transact some facts using your new schema:
+#### Now transact some facts using your new schema:
 ```clj
 datomic-schematode.examples.deli-menu> (d/transact db-conn
                                                    [{:db/id #db/id[:db.part/user]
@@ -73,8 +71,7 @@ datomic-schematode.examples.deli-menu> (d/transact db-conn
                                                      :salad/dressing :salad.dressing/ceasar}])
 ;; => #<promise$settable_future$reify__4958@65876428: {:db-before datomic.db.Db@bc569020, :db-after datomic.db.Db@eb44b720, :tx-data ...
 ```
-
-Now you can get your facts back out:
+#### Now you can get your facts back out:
 ```clj
 datomic-schematode.examples.deli-menu> (let [db (d/db db-conn)
                                              entities (map #(d/touch
@@ -89,6 +86,8 @@ datomic-schematode.examples.deli-menu> (let [db (d/db db-conn)
 ;; => 2
 ```
 
+### Using Constraints
+#### Constraints Step 1: Express Them
 Suppose that you want to constrain your data such that no sandwich can ever be
 named "soap-scum", and such that no two sandwiches can have the same bread and
 meat. The "soap-scum" constraint is not likely to be common, so you'll have to
@@ -125,21 +124,17 @@ looks:
                     [:base :enum [:lettuce :spinach :pasta :unicorns] :indexed]
                     [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}]])
 ```
-
-In order to use Schematode's constraints features, you must transact the
-necessary schema and db/fns:
+### Constraints Step 2: Transact the necessary Schematode constraints schema and db/fns:
 ```clj
 datomic-schematode.examples.deli-menu> (ds-core/init-schematode-constraints! db-conn)
 ;; => (#<promise$settable_future$reify__4958@7dd81cbd: {:db-before datomic.db.Db@d33b648e, :db-after datomic.db.Db@d4d8c6e7, :tx-data ...)
 ```
-
-Now you can transact your updated schema with your constraints added:
+### Constraints Step 3: Transact your schema with constraints added:
 ```clj
 datomic-schematode.examples.deli-menu> (ds-core/load-schema! db-conn schema2)
 ;; => (#<promise$settable_future$reify__4958@4ffefcb1: {:db-before datomic.db.Db@36c18235, :db-after datomic.db.Db@7827734f, :tx-data ...)
 ```
-
-Great! Now you have constraints. Do they work?
+### Constraints Step 4: Use :schematode-tx for all transactions.
 ```clj
 datomic-schematode.examples.deli-menu> (d/transact db-conn
                                                    [[:schematode-tx :enforce [{:db/id (d/tempid :db.part/user)
@@ -154,10 +149,7 @@ datomic-schematode.examples.deli-menu> (d/transact db-conn
                                                                                :sandwich/meat ""}]]])
 ;; => Exception ["Uniqueness failed for [:sandwich/bread :sandwich/meat]"]["Ew. You are not allowed to name a sandwich \"soap-scum\"."]  sun.reflect.NativeConstructorAccessorImpl.newInstance0 (NativeConstructorAccessorImpl.java:-2)
 ```
-
-Cool. But maybe you want to test your constraints without attempting to transact
-anything. Just pull the :schematode-tx* db/fn out of Datomic and execute it on
-your transaction data:
+#### You can test your constraints without attempting to transact anything. Just pull the :schematode-tx* db/fn out of Datomic and execute it on your transaction data:
 ```clj
 datomic-schematode.examples.deli-menu> (let [my-schematode-tx* (:db/fn (d/entity (d/db db-conn) :schematode-tx*))]
                                          (my-schematode-tx* (d/db db-conn)
@@ -173,8 +165,7 @@ datomic-schematode.examples.deli-menu> (let [my-schematode-tx* (:db/fn (d/entity
                                                               :sandwich/meat ""}]))
 ;; => ("Uniqueness failed for [:sandwich/bread :sandwich/meat]" "Ew. You are not allowed to name a sandwich \"soap-scum\".")
 ```
-
-If you want to know about constraint violations, but transact the data anyhow, you
+#### If you want to know about constraint violations, but transact the data anyhow, you
 can use :warn instead of :enforce when you call :schematode-tx:
 ```clj
 datomic-schematode.examples.deli-menu> (d/transact db-conn
@@ -192,10 +183,7 @@ datomic-schematode.examples.deli-menu> (d/transact db-conn
 ;; => ... #Datum{:e 13194139534346 :a 74 :v "[\"Uniqueness failed for [:sandwich/bread :sandwich/meat]\"][\"Ew. You are not allowed to name a sandwich \\\"soap-scum\\\".\"]" ...
 ```
 Note that the constraint messages have been applied to the TX entity.
-
-Lastly, if you want to know how much :schematode-tx is costing you, you can
-query the TX entities for the time elapsed while applying schematode
-constraints, or you can just call datomic-schematode.core/constraint-cost-stats:
+#### Analyze costs: you can query the TX entities for the time elapsed while applying schematode constraints, or you can just call datomic-schematode.core/constraint-cost-stats:
 ```clj
 datomic-schematode.examples.deli-menu> (let [db (d/db db-conn)
                                              query '[:find ?e :where [?e :schematode-constraint/elapsed-msec]]]
