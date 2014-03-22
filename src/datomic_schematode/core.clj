@@ -103,10 +103,10 @@
               (conj (schematize sdefs tempid-fn)
                     (dbfnize sdefs tempid-fn)))))
 
-(defn init-schematode!
+(defn init-schematode-constraints!
   "Initialize schematode constraint schema and tx-fns."
   ([conn]
-     (init-schematode! conn d/tempid))
+     (init-schematode-constraints! conn d/tempid))
   ([conn tempid-fn]
      (load-schema!* conn dsc-support/constraints-schema tempid-fn)
      (load-fns* conn dsc-support/tx-fns tempid-fn)))

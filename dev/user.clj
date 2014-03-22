@@ -21,7 +21,7 @@
   []
   (d/create-database db-url)
   (alter-var-root #'db-conn (constantly (d/connect db-url)))
-  (ds-core/init-schematode! db-conn)
+  (ds-core/init-schematode-constraints! db-conn)
   (ds-core/load-schema! db-conn ds-test/test-schemas))
 
 (defn stop!
