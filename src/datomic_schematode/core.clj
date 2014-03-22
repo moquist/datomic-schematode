@@ -1,5 +1,6 @@
 (ns datomic-schematode.core
   (:require [datomic.api :as d]
+            [incanter.stats :as stats]
             [datomic-schema.schema :as dsa]
             [datomic-schematode.constraints.support :as dsc-support]))
 
