@@ -149,7 +149,9 @@ datomic-schematode.examples.deli-menu> (d/transact db-conn
                                                                                :sandwich/meat ""}]]])
 ;; => Exception ["Uniqueness failed for [:sandwich/bread :sandwich/meat]"]["Ew. You are not allowed to name a sandwich \"soap-scum\"."]  sun.reflect.NativeConstructorAccessorImpl.newInstance0 (NativeConstructorAccessorImpl.java:-2)
 ```
-#### You can test your constraints without attempting to transact anything. Just pull the :schematode-tx* db/fn out of Datomic and execute it on your transaction data:
+#### You can test your constraints without attempting to transact anything. Just
+pull the :schematode-tx* db/fn out of Datomic and execute it on your transaction
+data:
 ```clj
 datomic-schematode.examples.deli-menu> (let [my-schematode-tx* (:db/fn (d/entity (d/db db-conn) :schematode-tx*))]
                                          (my-schematode-tx* (d/db db-conn)
@@ -183,7 +185,9 @@ datomic-schematode.examples.deli-menu> (d/transact db-conn
 ;; => ... #Datum{:e 13194139534346 :a 74 :v "[\"Uniqueness failed for [:sandwich/bread :sandwich/meat]\"][\"Ew. You are not allowed to name a sandwich \\\"soap-scum\\\".\"]" ...
 ```
 Note that the constraint messages have been applied to the TX entity.
-#### Analyze costs: you can query the TX entities for the time elapsed while applying schematode constraints, or you can just call datomic-schematode.core/constraint-cost-stats:
+#### Analyze costs: you can query the TX entities for the time elapsed while
+applying schematode constraints, or you can just call
+datomic-schematode.core/constraint-cost-stats:
 ```clj
 datomic-schematode.examples.deli-menu> (let [db (d/db db-conn)
                                              query '[:find ?e :where [?e :schematode-constraint/elapsed-msec]]]
