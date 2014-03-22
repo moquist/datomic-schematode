@@ -195,15 +195,16 @@ Note that the constraint messages have been applied to the TX entity.
 
 Lastly, if you want to know how much :schematode-tx is costing you, you can
 query the TX entities for the time elapsed while applying schematode
-constraints:
+constraints, or you can just call datomic-schematode.core/constraint-cost-stats:
 ```clj
 datomic-schematode.examples.deli-menu> (let [db (d/db db-conn)
                                              query '[:find ?e :where [?e :schematode-constraint/elapsed-msec]]]
                                          (map #(:schematode-constraint/elapsed-msec (d/entity db (first %)))
                                               (d/q query db)))
-(0.00147 0.00149 0.00142 0.00153 0.00148)
+;; => (0.001691 0.001691 0.001691 0.001691 0.001691)
+datomic-schematode.examples.deli-menu> (ds-core/constraint-cost-stats db-conn)
+;; => {:mean-msec 0.0016910000000000002, :median-msec 0.001691, :tx-count 5, :standard-deviation-msec 2.42434975903054E-19, :total-msec 0.008455}
 ```
 
 TODO before release:
 * Add vanilla support for required attrs.
-* Add lib fns to get convenient stats on :schematode-constraint/elapsed-msec.

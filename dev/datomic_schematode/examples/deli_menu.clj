@@ -164,3 +164,8 @@
         query '[:find ?e :where [?e :schematode-constraint/elapsed-msec]]]
     (map #(:schematode-constraint/elapsed-msec (d/entity db (first %)))
          (d/q query db))))
+
+(defn step10
+  "Get some performance cost stats."
+  []
+  (ds-core/constraint-cost-stats db-conn))
