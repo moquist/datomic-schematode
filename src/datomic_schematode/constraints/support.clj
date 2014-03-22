@@ -77,9 +77,13 @@
                (if (nil? result)
                  txs
                  (let [result (map (fn schematode-tx- [r] [r]) result)
-                       result (reduce str result)]
+                       result (str (reduce str result))]
                    (if (= :warn enforcement)
                      (conj txs {:db/id txid
+                                ;; Would it be better to assert constraint fn
+                                ;; :ident vals instead of string messages on the
+                                ;; TX entity?
                                 :schematode-constraint/messages result})
                      (throw (Exception. result))))))})}])
+
 
