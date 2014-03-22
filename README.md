@@ -35,7 +35,8 @@ In the following example, a few details are ellided. Please see
 First, you need to express your schemas. Here's a simple, single schema for a deli menu:
 ```clj
 (ns datomic-schematode.examples.deli-menu
-  (:require [datomic-schematode.core :as ds-core]))
+  (:require [datomic-schematode.core :as ds-core]
+            [datomic-schematode.constraints :as ds-constraints]))
 
 (def schema1
   [[:sandwich {:attrs [[:name :string :indexed]
@@ -88,6 +89,121 @@ datomic-schematode.examples.deli-menu> (let [db (d/db db-conn)
 ;; => 2
 ```
 
+Suppose that you want to constrain your data such that no sandwich can ever be
+named "soap-scum", and such that no two sandwiches can have the same bread and
+meat. The "soap-scum" constraint is not likely to be common, so you'll have to
+write your own db/fn for that one. But datomic-schematode.constraints/unique can
+help you out with multi-attribute uniqueness. Here's how the updated schema
+looks:
+```clj
+(def schema2
+  [[:sandwich {:attrs [[:name :string :indexed]
+                       [:bread :enum [:focaccia :wheat :maize :rice] :indexed]
+                       [:meat :string "Many people like meat on their sandwiches"]
+                       [:needs-toothpick :boolean]]
+               :dbfns [;; We can express any db/fns we want here. If a
+                       ;; db/fn has the
+                       ;; :schematode-constraint-fn/active attribute
+                       ;; with the value true, it will be called as a
+                       ;; schematode constraint fn, which must return
+                       ;; either nil (success) or a message explaining
+                       ;; the violated constraint.
+                       {:db/ident :my-fn ; The :ident will be namespaced! ...in this case, to :sandwich/my-fn
+                        :schematode-constraint-fn/active true ; required
+                        :schematode-constraint-fn/name "Avoid at least one gross sandwich name" ; optional
+                        :schematode-constraint-fn/desc "Sandwiches with gross names repel customers." ; optional
+                        :db/fn (d/function '{:lang :clojure
+                                             :params [db]
+                                             :code (if (empty? (d/q '[:find ?e
+                                                                      :where [?e :sandwich/name "soap-scum"]]
+                                                                    db))
+                                                     nil
+                                                     "Ew. You are not allowed to name a sandwich \"soap-scum\".")})}
+                       ;; We can use helper fns to create common constraints.
+                       (ds-constraints/unique :sandwich :bread :meat)]}]
+   [:salad {:attrs [[:name :string :indexed]
+                    [:base :enum [:lettuce :spinach :pasta :unicorns] :indexed]
+                    [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}]])
+```
+
+In order to use Schematode's constraints features, we must transact the
+necessary schema and db/fns:
+```clj
+datomic-schematode.examples.deli-menu> (ds-core/init-schematode-constraints! db-conn)
+;; => (#<promise$settable_future$reify__4958@7dd81cbd: {:db-before datomic.db.Db@d33b648e, :db-after datomic.db.Db@d4d8c6e7, :tx-data ...)
+```
+
+Now we can transact our updated schema with our constraints added:
+```clj
+datomic-schematode.examples.deli-menu> (ds-core/load-schema! db-conn schema2)
+;; => (#<promise$settable_future$reify__4958@4ffefcb1: {:db-before datomic.db.Db@36c18235, :db-after datomic.db.Db@7827734f, :tx-data ...)
+```
+
+Great! Now we have constraints. Do they work?
+```clj
+datomic-schematode.examples.deli-menu> (d/transact db-conn
+                                                   [[:schematode-tx :enforce [{:db/id (d/tempid :db.part/user)
+                                                                               :sandwich/name "soap-scum"}
+                                                                              {:db/id (d/tempid :db.part/user)
+                                                                               :sandwich/name "Just Rice"
+                                                                               :sandwich/bread :sandwich.bread/rice
+                                                                               :sandwich/meat ""}
+                                                                              {:db/id (d/tempid :db.part/user)
+                                                                               :sandwich/name "Only Rice"
+                                                                               :sandwich/bread :sandwich.bread/rice
+                                                                               :sandwich/meat ""}]]])
+;; => Exception ["Uniqueness failed for [:sandwich/bread :sandwich/meat]"]["Ew. You are not allowed to name a sandwich \"soap-scum\"."]  sun.reflect.NativeConstructorAccessorImpl.newInstance0 (NativeConstructorAccessorImpl.java:-2)
+```
+
+Cool. But maybe you want to test your constraints without attempting to transact
+anything. Just pull the :schematode-tx* db/fn out of Datomic and execute it on
+your transaction data:
+```clj
+datomic-schematode.examples.deli-menu> (let [my-schematode-tx* (:db/fn (d/entity (d/db db-conn) :schematode-tx*))]
+                                         (my-schematode-tx* (d/db db-conn)
+                                                            [{:db/id (d/tempid :db.part/user)
+                                                              :sandwich/name "soap-scum"}
+                                                             {:db/id (d/tempid :db.part/user)
+                                                              :sandwich/name "Just Rice"
+                                                              :sandwich/bread :sandwich.bread/rice
+                                                              :sandwich/meat ""}
+                                                             {:db/id (d/tempid :db.part/user)
+                                                              :sandwich/name "Only Rice"
+                                                              :sandwich/bread :sandwich.bread/rice
+                                                              :sandwich/meat ""}]))
+;; => ("Uniqueness failed for [:sandwich/bread :sandwich/meat]" "Ew. You are not allowed to name a sandwich \"soap-scum\".")
+```
+
+If we want to know about constraint violations, but transact the data anyhow, we
+can use :warn instead of :enforce when we call :schematode-tx:
+```clj
+datomic-schematode.examples.deli-menu> (d/transact db-conn
+                                                   [[:schematode-tx :warn [{:db/id (d/tempid :db.part/user)
+                                                                            :sandwich/name "soap-scum"}
+                                                                           {:db/id (d/tempid :db.part/user)
+                                                                            :sandwich/name "Just Rice"
+                                                                            :sandwich/bread :sandwich.bread/rice
+                                                                            :sandwich/meat ""}
+                                                                           {:db/id (d/tempid :db.part/user)
+                                                                            :sandwich/name "Only Rice"
+                                                                            :sandwich/bread :sandwich.bread/rice
+                                                                            :sandwich/meat ""}]]])
+;; => #<promise$settable_future$reify__4958@35e20aca: {:db-before datomic.db.Db@4caaa420, :db-after datomic.db.Db@df9d98cd ...
+;; => ... #Datum{:e 13194139534346 :a 74 :v "[\"Uniqueness failed for [:sandwich/bread :sandwich/meat]\"][\"Ew. You are not allowed to name a sandwich \\\"soap-scum\\\".\"]" ...
+```
+Note that the constraint messages have been applied to the TX entity.
+
+Lastly, if you want to know how much :schematode-tx is costing you, you can
+query the TX entities for the time elapsed while applying schematode
+constraints:
+```clj
+datomic-schematode.examples.deli-menu> (let [db (d/db db-conn)
+                                             query '[:find ?e :where [?e :schematode-constraint/elapsed-msec]]]
+                                         (map #(:schematode-constraint/elapsed-msec (d/entity db (first %)))
+                                              (d/q query db)))
+(0.00147 0.00149 0.00142 0.00153 0.00148)
+```
+
 TODO before release:
 * Add vanilla support for required attrs.
-* Document schematode-tx and general constraints support.
+* Add lib fns to get convenient stats on :schematode-constraint/elapsed-msec.
