@@ -30,7 +30,7 @@ Uses https://github.com/Yuppiechef/datomic-schema .
 *These instructions are incomplete and preliminary.*
 
 In the following example, a few details are ellided. Please see
-```test/datomic_schematode/examples/deli_menu.clj``` for the full example code.
+```dev/datomic_schematode/examples/deli_menu.clj``` for the full example code.
 
 First, you need to express your schemas. Here's a simple, single schema for a deli menu:
 ```clj
@@ -38,9 +38,9 @@ First, you need to express your schemas. Here's a simple, single schema for a de
   (:require [datomic-schematode.core :as ds-core]))
 
 (def schema1
-  [:sandwich {:attrs [[:bread-name :string :indexed]
-                      [:meat :string "Many people like meat on their sandwiches"]
-                      [:needs-toothpick :boolean]]}])
+  [[:sandwich {:attrs [[:bread-name :string :indexed]
+                       [:meat :string "Many people like meat on their sandwiches"]
+                       [:needs-toothpick :boolean]]}]])
 ```
 
 Next, load your schema into datomic:
@@ -52,14 +52,14 @@ datomic-schematode.examples.deli-menu> (ds-core/load-schema! db-conn schema1)
 Now transact some facts using your new schema:
 ```clj
 datomic-schematode.examples.deli-menu> (d/transact db-conn
-                                        [{:db/id #db/id[:db.part/user]
-                                          :sandwich/bread-name "focaccia"
-                                          :sandwich/meat "corned beef"
-                                          :sandwich/needs-toothpick true}
-                                         {:db/id #db/id[:db.part/user]
-                                          :sandwich/bread-name "rye"
-                                          :sandwich/meat "turky"
-                                          :sandwich/needs-toothpick false}])
+                                                   [{:db/id #db/id[:db.part/user]
+                                                     :sandwich/bread-name "focaccia"
+                                                     :sandwich/meat "corned beef"
+                                                     :sandwich/needs-toothpick true}
+                                                    {:db/id #db/id[:db.part/user]
+                                                     :sandwich/bread-name "rye"
+                                                     :sandwich/meat "turky"
+                                                     :sandwich/needs-toothpick false}])
 ;; => #<promise$settable_future$reify__4958@65876428: {:db-before datomic.db.Db@bc569020, :db-after datomic.db.Db@eb44b720, :tx-data ...
 ```
 
