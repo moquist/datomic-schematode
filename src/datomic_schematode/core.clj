@@ -103,16 +103,20 @@
               (conj (schematize sdefs tempid-fn)
                     (dbfnize sdefs tempid-fn)))))
 
+(defn init-schematode!
+  "Initialize schematode constraint schema and tx-fns."
+  ([conn]
+     (init-schematode! conn d/tempid))
+  ([conn tempid-fn]
+     (load-schema!* conn dsc-support/constraints-schema tempid-fn)
+     (load-fns* conn dsc-support/tx-fns tempid-fn)))
+
 ;; TODO: handle any resource that can be opened by io/reader.
 (defn load-schema!
   "Transact the specified schema definitions on the specified DB connection."
   ([conn sdefs]
-     (load-schema! conn sdefs d/tempid :init-constraints true :init-tx-fns true))
-  ([conn sdefs tempid-fn & {:keys [init-constraints init-tx-fns]}]
-     (when init-constraints
-       (load-schema!* conn dsc-support/constraints-schema tempid-fn))
-     (when init-tx-fns
-       (load-fns* conn dsc-support/tx-fns tempid-fn))
+     (load-schema! conn sdefs d/tempid))
+  ([conn sdefs tempid-fn]
      (load-schema!* conn sdefs tempid-fn)))
 
 (comment

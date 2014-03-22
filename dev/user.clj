@@ -9,15 +9,20 @@
             [datomic-schema.schema :as dsa]
             [datomic-schematode.core :as ds-core]
             [datomic-schematode.constraints :as ds-constraints]
-            [datomic-schematode.core-test :as ds-test]))
+            [datomic-schematode.constraints.support :as dsc-support]
+            [datomic-schematode.core-test :as ds-test]
+            [datomic-schematode.examples.deli-menu :as ds-deli]))
 
 (def db-url "datomic:mem://testdb")
+(def db-conn nil)
 
 (defn start!
   "Starts the current development system."
   []
   (d/create-database db-url)
-  (ds-core/load-schema! (d/connect db-url) ds-test/test-schemas))
+  (alter-var-root #'db-conn (constantly (d/connect db-url)))
+  (ds-core/init-schematode! db-conn)
+  (ds-core/load-schema! db-conn ds-test/test-schemas))
 
 (defn stop!
   "Shuts down and destroys the current development system."
