@@ -55,7 +55,7 @@
   [enforce? attrsmap]
   (d/transact
    (d/connect db-url)
-   [[:schematode-tx enforce?? [(merge {:db/id (d/tempid :db.part/user)}
+   [[:schematode-tx enforce? [(merge {:db/id (d/tempid :db.part/user)}
                                   attrsmap)]]]))
 
 (comment
