@@ -126,20 +126,20 @@ looks:
                     [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}]])
 ```
 
-In order to use Schematode's constraints features, we must transact the
+In order to use Schematode's constraints features, you must transact the
 necessary schema and db/fns:
 ```clj
 datomic-schematode.examples.deli-menu> (ds-core/init-schematode-constraints! db-conn)
 ;; => (#<promise$settable_future$reify__4958@7dd81cbd: {:db-before datomic.db.Db@d33b648e, :db-after datomic.db.Db@d4d8c6e7, :tx-data ...)
 ```
 
-Now we can transact our updated schema with our constraints added:
+Now you can transact your updated schema with your constraints added:
 ```clj
 datomic-schematode.examples.deli-menu> (ds-core/load-schema! db-conn schema2)
 ;; => (#<promise$settable_future$reify__4958@4ffefcb1: {:db-before datomic.db.Db@36c18235, :db-after datomic.db.Db@7827734f, :tx-data ...)
 ```
 
-Great! Now we have constraints. Do they work?
+Great! Now you have constraints. Do they work?
 ```clj
 datomic-schematode.examples.deli-menu> (d/transact db-conn
                                                    [[:schematode-tx :enforce [{:db/id (d/tempid :db.part/user)
@@ -174,8 +174,8 @@ datomic-schematode.examples.deli-menu> (let [my-schematode-tx* (:db/fn (d/entity
 ;; => ("Uniqueness failed for [:sandwich/bread :sandwich/meat]" "Ew. You are not allowed to name a sandwich \"soap-scum\".")
 ```
 
-If we want to know about constraint violations, but transact the data anyhow, we
-can use :warn instead of :enforce when we call :schematode-tx:
+If you want to know about constraint violations, but transact the data anyhow, you
+can use :warn instead of :enforce when you call :schematode-tx:
 ```clj
 datomic-schematode.examples.deli-menu> (d/transact db-conn
                                                    [[:schematode-tx :warn [{:db/id (d/tempid :db.part/user)
