@@ -120,6 +120,20 @@
   ([conn sdefs tempid-fn]
      (load-schema!* conn sdefs tempid-fn)))
 
+(defn constraint-cost-stats [conn]
+  (let [db (d/db conn)
+        query '[:find ?e :where [?e :schematode-constraint/elapsed-msec]]
+        costs (map #(:schematode-constraint/elapsed-msec (d/entity db (first %)))
+                   (d/q query db))
+        cnt (count costs)
+        total (reduce + costs)
+        mean (/ total cnt)
+        median (stats/median costs)]
+    {:mean-msec mean
+     :median-msec median
+     :tx-count cnt
+     :total-msec total}))
+
 (comment
   (def schema-full-sample
     {:db/id #db/id [:db.part/db]
