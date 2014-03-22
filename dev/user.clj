@@ -52,18 +52,15 @@
 
 (defn tx
   "Transact the given entity map using :schematode-tx"
-  [warn? attrsmap]
+  [enforce? attrsmap]
   (d/transact
    (d/connect db-url)
-   [[:schematode-tx warn? [(merge {:db/id (d/tempid :db.part/user)}
+   [[:schematode-tx enforce?? [(merge {:db/id (d/tempid :db.part/user)}
                                   attrsmap)]]]))
 
 (comment
-  (tx :warn {:user/username "mim" :user/dob "2012-01-01" :user/lastname "marp"})
+  (tx :enforce {:user/username "mim" :user/dob "2012-01-01" :user/lastname "marp"})
   (ptouch-that '[:find ?e :where [?e :user/username]])
-
-  (tx-warn {:user/username "jim" :user/lastname "im" :user/dob "2001-01-01"})
-  (ptouch-that '[:find ?e :where [?e :schematode-constraint/messages]])
 
   (def m (:db/fn (d/entity (d/db db-conn) :schematode-tx*)))
   (m (d/db db-conn) [{:db/id (d/tempid :db.part/user)
