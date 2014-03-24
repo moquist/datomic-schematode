@@ -19,10 +19,10 @@
                     [:base :enum [:lettuce :spinach :pasta :unicorns] :indexed]
                     [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}]])
 
-(defn step1 []
+(defn step1! []
   (ds-core/load-schema! db-conn schema1))
 
-(defn step2 []
+(defn step2! []
   (d/transact db-conn
               [{:db/id #db/id[:db.part/user]
                 :sandwich/name "Norville's #1"
@@ -81,22 +81,22 @@
                     [:base :enum [:lettuce :spinach :pasta :unicorns] :indexed]
                     [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}]])
 
-(defn step4
+(defn step4!
   "You must init-schematode-constraints! before you can use
    schematode's constraint features."
   []
   (ds-core/init-schematode-constraints! db-conn))
 
-(defn step5
-  "schema2 contains db/fns with :schematode-constraint-fn attrs."
+(defn step5!
+  "schema2 contains db/fns with :schematode.constraint-fn attrs."
   []
   (ds-core/load-schema! db-conn schema2))
 
-(defn step6
+(defn step6!
   "Can we violate our constraints?"
   []
   (d/transact db-conn
-              [[:schematode-tx :enforce [{:db/id (d/tempid :db.part/user)
+              [[:schematode/tx :enforce [{:db/id (d/tempid :db.part/user)
                                           :sandwich/name "soap-scum"}
                                          {:db/id (d/tempid :db.part/user)
                                           :sandwich/name "Just Rice"
@@ -107,37 +107,22 @@
                                           :sandwich/bread :sandwich.bread/rice
                                           :sandwich/meat ""}]]]))
 
-(defn step6
-  "Can we violate our constraints?"
-  []
-  (d/transact db-conn
-              [[:schematode-tx :enforce [{:db/id (d/tempid :db.part/user)
-                                          :sandwich/name "soap-scum"}
-                                         {:db/id (d/tempid :db.part/user)
-                                          :sandwich/name "Just Rice"
-                                          :sandwich/bread :sandwich.bread/rice
-                                          :sandwich/meat ""}
-                                         {:db/id (d/tempid :db.part/user)
-                                          :sandwich/name "Only Rice"
-                                          :sandwich/bread :sandwich.bread/rice
-                                          :sandwich/meat ""}]]]))
 (defn step7
   "Test our constraints without attempting to transact anything."
   []
-  (let [my-schematode-tx* (:db/fn (d/entity (d/db db-conn) :schematode-tx*))]
-    (my-schematode-tx* (d/db db-conn)
-                       [{:db/id (d/tempid :db.part/user)
-                         :sandwich/name "soap-scum"}
-                        {:db/id (d/tempid :db.part/user)
-                         :sandwich/name "Just Rice"
-                         :sandwich/bread :sandwich.bread/rice
-                         :sandwich/meat ""}
-                        {:db/id (d/tempid :db.part/user)
-                         :sandwich/name "Only Rice"
-                         :sandwich/bread :sandwich.bread/rice
-                         :sandwich/meat ""}])))
+  (ds-core/tx* db-conn
+               [{:db/id (d/tempid :db.part/user)
+                 :sandwich/name "soap-scum"}
+                {:db/id (d/tempid :db.part/user)
+                 :sandwich/name "Just Rice"
+                 :sandwich/bread :sandwich.bread/rice
+                 :sandwich/meat ""}
+                {:db/id (d/tempid :db.part/user)
+                 :sandwich/name "Only Rice"
+                 :sandwich/bread :sandwich.bread/rice
+                 :sandwich/meat ""}]))
 
-(defn step8
+(defn step8!
   "Apply constraint warning messages to the TX entity, but let the
    transaction go through.
 
