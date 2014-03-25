@@ -130,9 +130,7 @@ datomic-schematode.examples.deli-menu> (ds-core/init-schematode-constraints! (d/
 datomic-schematode.examples.deli-menu> (ds-core/load-schema! (d/connect db-url) schema2)
 ;; => (#<promise$settable_future$reify__4958@4ffefcb1: {:db-before datomic.db.Db@36c18235, :db-after datomic.db.Db@7827734f, :tx-data ...)
 ```
-#### Constraints Step 4: Use :schematode/tx for all
-    transactions. (datomic-schematode.core/tx is a handy wrapper fn
-    you might like for this.)
+#### Constraints Step 4: Use :schematode/tx for all transactions. (datomic-schematode.core/tx is a handy wrapper fn you might like for this.)
 ```clj
 datomic-schematode.examples.deli-menu> (d/transact (d/connect db-url)
                                                    [[:schematode/tx :enforce [{:db/id (d/tempid :db.part/user)
