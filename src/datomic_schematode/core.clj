@@ -51,12 +51,18 @@
                    (map (fn partize- [[_ s]] (keyword "db.part" (name (or (:part s) "user"))))
                         sdefs)))))
 
+(defn namespace-dbfns [sname dbfns]
+  (map (fn namespace-dbfns- [dbfn]
+         (let [ident (keyword (name sname) (name (:db/ident dbfn)))]
+           (merge dbfn {:db/ident ident})))
+       dbfns))
+
 (defn extract-dbfns
   "Extract db/fn specs from sdefs."
   [sdefs]
   (flatten
    (remove nil?
-           (map (fn extract-dbfns- [[_ sdef]] (:dbfns sdef))
+           (map (fn extract-dbfns- [[sname sdef]] (namespace-dbfns sname (:dbfns sdef)))
                 sdefs))))
 
 (defn dbfnize
