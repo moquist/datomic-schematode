@@ -57,7 +57,6 @@
                              :where [?e :sandwich/bread]] db))]
     {:entities entities :count (count entities)}))
 
-
 ;; Demonstrate Constraint Features
 ;; -------------------
 (def schema2

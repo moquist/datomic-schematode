@@ -21,11 +21,10 @@
 (deftest deli-menu-tests-no-constraints
   (testing "step1!"
     (is (ds-tl/ensure-seq-txs (deli-menu/step1!))))
-  (testing "step2! and step3"
-    (is (= (let [{:keys [entities count]} (do
-                                            (deli-menu/step1!)
-                                            (deli-menu/step2!)
-                                            (deli-menu/step3))
+  (testing "step2!"
+    (is (ds-tl/ensure-tx (deli-menu/step2!))))
+  (testing "step3"
+    (is (= (let [{:keys [entities count]} (deli-menu/step3)
                  entities (map ds-tl/predict-entity-map entities)
                  entities (into #{} entities)]
              [entities count])
@@ -45,14 +44,14 @@
              "unique constraint failed for [:sandwich/bread :sandwich/meat]"))))
   
   (testing "step8! and step9"
-    (is (= (keys (first (do
-                          (deli-menu/step8!)
-                          (deli-menu/step9))))
-           '(:schematode.constraint/messages :schematode.constraint/elapsed-msec :db/txInstant))))
+    (is (= (sort (keys (first (do
+                                (deli-menu/step8!)
+                                (deli-menu/step9)))))
+           '(:db/txInstant :schematode.constraint/elapsed-msec :schematode.constraint/messages))))
 
   (testing "step10"
     (is (every? number? (deli-menu/step10))))
 
   (testing "step11"
-    (is (= (keys (deli-menu/step11))
-           '(:mean-msec :median-msec :tx-count :total-msec)))))
+    (is (= (sort (keys (deli-menu/step11)))
+           '(:mean-msec :median-msec :total-msec :tx-count)))))
