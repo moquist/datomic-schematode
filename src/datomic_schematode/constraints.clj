@@ -37,7 +37,7 @@
   "Given a base-name (e.g., \"unique\") for this constraint, a single
    datomic namespace and the relevant attributes under that namespace,
    return a vector with the :db/ident, :schematode-constraint-fn/name,
-   :schematode-constraint-fn/desc, and failure-message values."
+   :schematode.constraint-fn/desc, and failure-message values."
   [base namespace attrs]
   (let [base (name base)
         longbase (str "schematode-constraint-fn-" base)
@@ -45,7 +45,7 @@
         ns-attrs (vec (namespace-attrs namespace attrs))
         n (str longbase " " ns-attrs)
         desc (format "Auto-generated constraint: %s %s" base ns-attrs)
-        failure-msg (str "Uniqueness failed for " ns-attrs)]
+        failure-msg (str base " constraint failed for " ns-attrs)]
     [ident n desc failure-msg]))
 
 (defn unique
@@ -59,9 +59,9 @@
     ;; TODO: keep the duplicated attr values from the query result
     ;; and append them to the failure message.
     {:db/ident ident
-     :schematode-constraint-fn/desc desc
-     :schematode-constraint-fn/name n
-     :schematode-constraint-fn/active true
+     :schematode.constraint-fn/desc desc
+     :schematode.constraint-fn/name n
+     :schematode.constraint-fn/active true
      :db/fn (d/function `{:lang :clojure
                           :params [~'db]
                           :code (if (empty? (d/q '{:find [~'?e] :where ~where-clauses} ~'db))
@@ -81,7 +81,7 @@
    (d/entity (d/db (d/connect db-url))
              (ffirst
               (d/q '{:find [?e]
-                     :where [[?e :schematode-constraint-fn/name]]}
+                     :where [[?e :schematode.constraint-fn/name]]}
                    (d/db (d/connect db-url))))))
 
   )

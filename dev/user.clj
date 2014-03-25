@@ -51,18 +51,18 @@
   (pprint (touch-that query)))
 
 (defn tx
-  "Transact the given entity map using :schematode-tx"
+  "Transact the given entity map using :schematode/tx"
   [enforce? attrsmap]
   (d/transact
    (d/connect db-url)
-   [[:schematode-tx enforce? [(merge {:db/id (d/tempid :db.part/user)}
+   [[:schematode/tx enforce? [(merge {:db/id (d/tempid :db.part/user)}
                                   attrsmap)]]]))
 
 (comment
   (tx :enforce {:user/username "mim" :user/dob "2012-01-01" :user/lastname "marp"})
   (ptouch-that '[:find ?e :where [?e :user/username]])
 
-  (def m (:db/fn (d/entity (d/db db-conn) :schematode-tx*)))
+  (def m (:db/fn (d/entity (d/db db-conn) :schematode/tx*)))
   (m (d/db db-conn) [{:db/id (d/tempid :db.part/user)
                       :user/username "jim"
                       :user/lastname "im"
