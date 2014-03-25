@@ -54,17 +54,17 @@ datomic-schematode.examples.deli-menu> (ds-core/load-schema! (d/connect db-url) 
 #### Now transact some facts using your new schema:
 ```clj
 datomic-schematode.examples.deli-menu> (d/transact (d/connect db-url)
-                                                   [{:db/id #db/id[:db.part/user]
+                                                   [{:db/id (d/tempid :db.part/user)
                                                      :sandwich/name "Norville's #1"
                                                      :sandwich/bread :sandwich.bread/focaccia
                                                      :sandwich/meat "corned beef"
                                                      :sandwich/needs-toothpick true}
-                                                    {:db/id #db/id[:db.part/user]
+                                                    {:db/id (d/tempid :db.part/user)
                                                      :sandwich/name "Thanksgiving Leftovers"
                                                      :sandwich/bread :sandwich.bread/maize
                                                      :sandwich/meat "turkey"
                                                      :sandwich/needs-toothpick false}
-                                                    {:db/id #db/id[:db.part/user]
+                                                    {:db/id (d/tempid :db.part/user)
                                                      :salad/name "Ceasar"
                                                      :salad/base :salad.base/lettuce
                                                      :salad/dressing :salad.dressing/ceasar}])
