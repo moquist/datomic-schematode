@@ -171,9 +171,7 @@ datomic-schematode.examples.deli-menu> (ds-core/tx (d/connect db-url)
                                                      :sandwich/meat ""}])
 ;; => Exception ["Ew. You are not allowed to name a sandwich \"soap-scum\"."]["unique constraint failed for [:sandwich/bread :sandwich/meat]"]  ns-10241/eval10242/fn--10243 (form-init9213208939110354565.clj:1)
 ```
-#### You can test your constraints without attempting to transact anything. Just
-pull the :schematode/tx* db/fn out of Datomic and execute it on your transaction
-data (or use datomic-schematode.core/tx*, which wraps :schematode/tx* for you):
+#### You can test your constraints without attempting to transact anything. Just pull the :schematode/tx* db/fn out of Datomic and execute it on your transaction data (or use datomic-schematode.core/tx*, which wraps :schematode/tx* for you):
 ```clj
 datomic-schemtode.examples.deli-menu> (let [my-schematode-tx* (:db/fn (d/entity (d/db (d/connect db-url)) :schematode/tx*))]
                                          (my-schematode-tx* (d/db (d/connect db-url))
@@ -203,8 +201,7 @@ datomic-schematode.examples.deli-menu> (ds-core/tx* (d/connect db-url)
                                                       :sandwich/meat ""}])
 ;; => ("Ew. You are not allowed to name a sandwich \"soap-scum\"." "unique constraint failed for [:sandwich/bread :sandwich/meat]")
 ```
-#### If you want to know about constraint violations, but transact the data anyhow, you
-can use :warn instead of :enforce when you call :schematode/tx:
+#### If you want to know about constraint violations, but transact the data anyhow, you can use :warn instead of :enforce when you call :schematode/tx:
 ```clj
 datomic-schematode.examples.deli-menu> (d/transact (d/connect db-url)
                                                    [[:schematode/tx :warn [{:db/id (d/tempid :db.part/user)
@@ -221,9 +218,7 @@ datomic-schematode.examples.deli-menu> (d/transact (d/connect db-url)
 ;; => ... #Datum{:e 13194139534346 :a 74 :v "[\"Uniqueness failed for [:sandwich/bread :sandwich/meat]\"][\"Ew. You are not allowed to name a sandwich \\\"soap-scum\\\".\"]" ...
 ```
 Note that the constraint messages have been applied to the TX entity.
-#### Analyze costs: you can query the TX entities for the time elapsed while
-applying schematode constraints, or you can just call
-datomic-schematode.core/constraint-cost-stats:
+#### Analyze costs: you can query the TX entities for the time elapsed while applying schematode constraints, or you can just call datomic-schematode.core/constraint-cost-stats:
 ```clj
 datomic-schematode.examples.deli-menu> (let [db (d/db (d/connect db-url))
                                              query '[:find ?e :where [?e :schematode.constraint/elapsed-msec]]]
