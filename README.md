@@ -234,3 +234,6 @@ datomic-schematode.examples.deli-menu> (ds-core/constraint-cost-stats (d/connect
 
 TODO:
 * Add vanilla support for required attrs.
+
+## Thanks
+...to [Aaron Brooks](https://github.com/abrooks) for sharing the idea for :schematode/tx with me.
