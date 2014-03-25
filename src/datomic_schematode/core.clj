@@ -87,21 +87,6 @@
       schema
       (conj schema partitions))))
 
-(defn- load-fn*
-  "Temporary fn to load up a tx-fn.
-   TODO: merge tx-fns into sdefs and load via load-schema!*"
-  [conn fnspec tempid-fn]
-  (d/transact conn [(merge {:db/id (tempid-fn :db.part/user)} fnspec)]))
-
-(defn- load-fns*
-  "Temporary fn to load up tx-fns.
-   TODO: merge tx-fns into sdefs and load via load-schema!*"
-  [conn fnspecs tempid-fn]
-  (doall
-   (map (fn load-fns*- [fnspec]
-          (load-fn* conn fnspec tempid-fn))
-        fnspecs)))
-
 (defn- load-schema!*
   "Transact sdefs into conn, using tempid-fn.
    Return seq of tx promises."
@@ -115,8 +100,7 @@
   ([conn]
      (init-schematode-constraints! conn d/tempid))
   ([conn tempid-fn]
-     (load-schema!* conn dsc-support/constraints-schema tempid-fn)
-     (load-fns* conn dsc-support/tx-fns tempid-fn)))
+     (load-schema!* conn dsc-support/constraints-schema tempid-fn)))
 
 ;; TODO: handle any resource that can be opened by io/reader.
 (defn load-schema!
