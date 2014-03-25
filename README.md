@@ -10,19 +10,20 @@ datomic-schematode [![Build Status](https://travis-ci.org/vlacs/datomic-schemato
     leaving a microscopic trail of its gastropod-derived polymer network gel among
     the weave. It crouched on his shoulder.
 
-    “Focaccia reubens,” Norville told Benny, the deli man.
+    “Focaccia reubens, hold the horsey,” Norville told Benny, the deli man.
 
     “Actually,” the schematode piped up, filling the room with its shrilly
-    precise and insistent voice, “he wants corned beef on an herb-topped flatbread,
-    where corned-beef is a salt-cured beef product, and the flatbread is…”
+    precise and insistent voice, “he wants a sandwich without horseradish sauce
+    but with corned beef on an herb-topped flatbread, where corned-beef is
+    a salt-cured beef product, and the flatbread is…”
 
     Because Norville had good taste, he was in a good deli. Because he was in a
     good deli, and because the deli happened to be new, it had auto-scrubbers that
     took the schematode out with one well-placed burst of plasma particulate.
 
-    Benny always bought the best and piled it high. The sandwich was delicious.
+    Benny always bought the best and piled it high. The sandwich was delicious. It had no horseradish.
 
-Datomic Schematode takes your concise schema expression and expands upon it, so you can d/transact without explaining every detail yourself. It’s better than a talking worm.
+Datomic Schematode takes your concise expression of schema and constraints and expands upon it, so you can d/transact without explaining every detail yourself.  It’s better than a talking worm.
 
 Uses https://github.com/Yuppiechef/datomic-schema .
 
@@ -32,7 +33,7 @@ Uses https://github.com/Yuppiechef/datomic-schema .
 In the following example, a few details are ellided. Please see
 ```dev/datomic_schematode/examples/deli_menu.clj``` for the full example code.
 
-#### First, you need to express your schemas. Here's a simple, single schema for a deli menu:
+#### First, you need to express your schemas. Here's a small schema for a deli menu:
 ```clj
 (ns datomic-schematode.examples.deli-menu
   (:require [datomic-schematode.core :as ds-core]
