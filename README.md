@@ -155,6 +155,7 @@ datomic-schematode.examples.deli-menu> (d/transact (d/connect db-url)
                                                                                :sandwich/bread :sandwich.bread/rice
                                                                                :sandwich/meat ""}]]])
 ;; => Exception ["Ew. You are not allowed to name a sandwich \"soap-scum\"."]["unique constraint failed for [:sandwich/bread :sandwich/meat]"]  ns-10241/eval10242/fn--10243 (form-init9213208939110354565.clj:1)
+
 ;; Or just use datomic-schematode.core/tx:
 datomic-schematode.examples.deli-menu> (ds-core/tx (d/connect db-url)
                                                    :enforce
@@ -168,7 +169,7 @@ datomic-schematode.examples.deli-menu> (ds-core/tx (d/connect db-url)
                                                      :sandwich/name "Only Rice"
                                                      :sandwich/bread :sandwich.bread/rice
                                                      :sandwich/meat ""}])
-Exception ["Ew. You are not allowed to name a sandwich \"soap-scum\"."]["unique constraint failed for [:sandwich/bread :sandwich/meat]"]  ns-10241/eval10242/fn--10243 (form-init9213208939110354565.clj:1)
+;; => Exception ["Ew. You are not allowed to name a sandwich \"soap-scum\"."]["unique constraint failed for [:sandwich/bread :sandwich/meat]"]  ns-10241/eval10242/fn--10243 (form-init9213208939110354565.clj:1)
 ```
 #### You can test your constraints without attempting to transact anything. Just
 pull the :schematode/tx* db/fn out of Datomic and execute it on your transaction
@@ -187,6 +188,7 @@ datomic-schemtode.examples.deli-menu> (let [my-schematode-tx* (:db/fn (d/entity 
                                                               :sandwich/bread :sandwich.bread/rice
                                                               :sandwich/meat ""}]))
 ;; => ("Ew. You are not allowed to name a sandwich \"soap-scum\"." "unique constraint failed for [:sandwich/bread :sandwich/meat]")
+
 ;; Or just use datomic-schematode.core/tx*:
 datomic-schematode.examples.deli-menu> (ds-core/tx* (d/connect db-url)
                                                     [{:db/id (d/tempid :db.part/user)
@@ -236,4 +238,4 @@ TODO:
 * Add vanilla support for required attrs.
 
 ## Thanks
-...to [Aaron Brooks](https://github.com/abrooks) for sharing the idea for :schematode/tx with me.
+...to [Aaron Brooks](https://github.com/abrooks) for sharing the idea for what became :schematode/tx with me.
