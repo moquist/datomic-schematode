@@ -13,6 +13,10 @@
   (d/create-database db-url)
   (d/connect db-url))
 
+(defn reset []
+  (d/delete-database db-url)
+  (step0!))
+
 ;; Demonstrate Basic Features
 ;; -------------------
 (def schema1
@@ -167,3 +171,17 @@
   "Get some performance cost stats."
   []
   (ds-core/constraint-cost-stats (d/connect db-url)))
+
+(defn do-it-all []
+  (pprint [(step0!)
+           (step1!)
+           (step2!)
+           (step3)
+           (step4!)
+           (step5!)
+           (step6!)
+           (step7)
+           (step8!)
+           (step9)
+           (step10)
+           (step11)]))
