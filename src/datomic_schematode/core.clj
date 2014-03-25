@@ -112,8 +112,8 @@
 
 (defn constraint-cost-stats [conn]
   (let [db (d/db conn)
-        query '[:find ?e :where [?e :schematode-constraint/elapsed-msec]]
-        costs (map #(:schematode-constraint/elapsed-msec (d/entity db (first %)))
+        query '[:find ?e :where [?e :schematode.constraint/elapsed-msec]]
+        costs (map #(:schematode.constraint/elapsed-msec (d/entity db (first %)))
                    (d/q query db))
         cnt (count costs)
         total (reduce + costs)
