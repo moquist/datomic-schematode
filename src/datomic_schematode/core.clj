@@ -124,6 +124,18 @@
      :tx-count cnt
      :total-msec total}))
 
+(defn tx
+  "wrapper for :schematode/tx"
+  [conn enforce? txs]
+  (d/transact conn [[:schematode/tx enforce? txs]]))
+
+(defn tx*
+  "wrapper for :schematode/tx*"
+  [conn txs]
+  (let [db (d/db conn)
+        my-schematode-tx* (:db/fn (d/entity db :schematode/tx*))]
+    (my-schematode-tx* db txs)))
+
 (comment
   (def schema-full-sample
     {:db/id #db/id [:db.part/db]
