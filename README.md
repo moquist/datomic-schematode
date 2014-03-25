@@ -10,7 +10,7 @@ datomic-schematode [![Build Status](https://travis-ci.org/vlacs/datomic-schemato
     leaving a microscopic trail of its gastropod-derived polymer network gel among
     the weave. It crouched on his shoulder.
 
-    “Focaccia reubens, hold the horsey,” Norville told Benny, the deli man.
+    “Focaccia reubens and hold the horsey,” Norville told Benny, the deli man.
 
     “Actually,” the schematode piped up, filling the room with its shrilly
     precise and insistent voice, “he wants a sandwich without horseradish sauce
