@@ -1,7 +1,5 @@
 datomic-schematode [![Build Status](https://travis-ci.org/vlacs/datomic-schematode.png?branch=master)](https://travis-ci.org/vlacs/datomic-schematode)
 ===============
-*Note: Still pre-release.*
-
 <a title="By Bob Goldstein, UNC Chapel Hill http://bio.unc.edu/people/faculty/goldstein/ (Own work) [CC-BY-SA-3.0 (http://creativecommons.org/licenses/by-sa/3.0)], via Wikimedia Commons" href="http://commons.wikimedia.org/wiki/File%3ACelegansGoldsteinLabUNC.jpg"><img width="64" alt="CelegansGoldsteinLabUNC" src="http://upload.wikimedia.org/wikipedia/commons/6/6a/CelegansGoldsteinLabUNC.jpg"/></a>
 
     They set a schematode on Norville at lunch, in the new deli. It was sighted
@@ -28,9 +26,7 @@ Datomic Schematode takes your concise expression of schema and constraints and e
 Uses https://github.com/Yuppiechef/datomic-schema .
 
 ## Usage
-*These instructions are incomplete and preliminary.*
-
-In the following example, a few details are ellided. Please see
+In the following examples, a few details are ellided. Please see
 ```dev/datomic_schematode/examples/deli_menu.clj``` for the full example code.
 
 #### First, you need to express your schemas. Here's a small schema for a deli menu:
@@ -200,5 +196,5 @@ datomic-schematode.examples.deli-menu> (ds-core/constraint-cost-stats (d/connect
 ;; => {:mean-msec 0.0016910000000000002, :median-msec 0.001691, :tx-count 5, :standard-deviation-msec 2.42434975903054E-19, :total-msec 0.008455}
 ```
 
-TODO before release:
+TODO:
 * Add vanilla support for required attrs.
