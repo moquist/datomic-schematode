@@ -27,7 +27,16 @@ Datomic Schematode takes your concise expression of schema and constraints and e
 
 Uses https://github.com/Yuppiechef/datomic-schema .
 
-## Usage
+## Artifact
+
+All artifacts are published to [clojars](https://clojars.org/datomic-schematode). Latest version is `0.1.0-RC1`:
+
+```
+[datomic-schematode "0.1.0-RC1"]
+```
+
+
+## Examples
 In the following examples, a few details are ellided. Please see
 ```dev/datomic_schematode/examples/deli_menu.clj``` for the full example code.
 
