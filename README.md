@@ -120,17 +120,17 @@ looks:
                     [:base :enum [:lettuce :spinach :pasta :unicorns] :indexed]
                     [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}]])
 ```
-### Constraints Step 2: Transact the necessary Schematode constraints schema and db/fns:
+#### Constraints Step 2: Transact the necessary Schematode constraints schema and db/fns:
 ```clj
 datomic-schematode.examples.deli-menu> (ds-core/init-schematode-constraints! (d/connect db-url))
 ;; => (#<promise$settable_future$reify__4958@7dd81cbd: {:db-before datomic.db.Db@d33b648e, :db-after datomic.db.Db@d4d8c6e7, :tx-data ...)
 ```
-### Constraints Step 3: Transact your schema with constraints added:
+#### Constraints Step 3: Transact your schema with constraints added:
 ```clj
 datomic-schematode.examples.deli-menu> (ds-core/load-schema! (d/connect db-url) schema2)
 ;; => (#<promise$settable_future$reify__4958@4ffefcb1: {:db-before datomic.db.Db@36c18235, :db-after datomic.db.Db@7827734f, :tx-data ...)
 ```
-### Constraints Step 4: Use :schematode/tx for all
+#### Constraints Step 4: Use :schematode/tx for all
     transactions. (datomic-schematode.core/tx is a handy wrapper fn
     you might like for this.)
 ```clj
