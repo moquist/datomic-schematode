@@ -95,6 +95,10 @@ datomic-schematode.examples.deli-menu> (let [db (d/db (d/connect db-url))
 
 ### Using Constraints
 #### Constraints Step 1: Express Them
+Datomic Schematode enables you to use any db/fn as a constraint, providing that it:
+1. returns nil on success (i.e., the constraint is satisifed) and
+2. returns a message string on failure.
+
 Suppose that you want to constrain your data such that no sandwich can ever be
 named "soap-scum", and such that no two sandwiches can have the same bread and
 meat. The "soap-scum" constraint is not likely to be common, so you'll have to
