@@ -80,9 +80,7 @@
   [sdefs tempid-fn]
   (let [schema (map (partial dsa/generate-schema tempid-fn)
                     (expand-schemas sdefs))
-        partitions (partize sdefs tempid-fn)
-        ;; TODO: handle fns here
-        fns (dbfnize () sdefs)]
+        partitions (partize sdefs tempid-fn)]
     (if (empty? partitions)
       schema
       (conj schema partitions))))
