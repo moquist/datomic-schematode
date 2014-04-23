@@ -8,25 +8,26 @@
 (use-fixtures :once config/with-db)
 
 (def test-schemas
-  [[:user {:attrs [[:username :string :db.unique/identity]
-                   [:pwd :string "Hashed password string"]
-                   [:email :string :indexed]
-                   [:dob :string :indexed]
-                   [:lastname :string :indexed]
-                   [:status :enum [:pending :active :inactive :cancelled]]
-                   [:group :ref :many]]
-           :part :app
-           :dbfns [(ds-constraints/unique :user :lastname :dob)]}]
-   [:group {:attrs [[:name :string]
-                    [:permission :string :many]]
-            ;; testing without :part
-            }]])
+  [{:namespace :user
+    :attrs [[:username :string :db.unique/identity]
+            [:pwd :string "Hashed password string"]
+            [:email :string :indexed]
+            [:dob :string :indexed]
+            [:lastname :string :indexed]
+            [:status :enum [:pending :active :inactive :cancelled]]
+            [:group :ref :many]]
+    :part :app
+    :dbfns [(ds-constraints/unique :user :lastname :dob)]}
+   {:namespace :group
+    :attrs [[:name :string]
+            [:permission :string :many]]
+    ;; testing without :part
+    }])
 
 (deftest expand-fields-test
   (testing "expand-fields"
     (is (= (ds-core/expand-fields
-            (get-in (apply hash-map (flatten test-schemas))
-                    [:user :attrs]))
+            (:attrs (first test-schemas)))
            {"group" [:ref #{:many}], "status" [:enum #{[:pending :active :inactive :cancelled]}], "lastname" [:string #{:indexed}], "dob" [:string #{:indexed}], "email" [:string #{:indexed}], "pwd" [:string #{"Hashed password string"}], "username" [:string #{:db.unique/identity}]}))))
 
 (deftest expand-schemas-test
@@ -42,5 +43,5 @@
 (deftest load-schema!-test
   (testing "load-schema!"
     (is (= (map #(keys (deref %))
-                (ds-core/load-schema! (d/connect config/db-url) [[:u {:attrs [[:a :string]]}]]))
+                (ds-core/load-schema! (d/connect config/db-url) [{:namespace :u :attrs [[:a :string]]}]))
            '((:db-before :db-after :tx-data :tempids) (:db-before :db-after :tx-data :tempids))))))

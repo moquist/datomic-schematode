@@ -7,9 +7,10 @@
 (def db-url "datomic:mem://constraints-test")
 
 (def test-schemas
-  [[:a {:attrs [[:a1 :string]
-                [:a2 :string]]
-        :dbfns [(ds-constraints/unique :a :a1 :a2)]}]])
+  [{:namespace :a
+    :attrs [[:a1 :string]
+            [:a2 :string]]
+    :dbfns [(ds-constraints/unique :a :a1 :a2)]}])
 
 (defn with-schema [f]
   (d/create-database db-url)
