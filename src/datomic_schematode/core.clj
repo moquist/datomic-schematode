@@ -17,39 +17,35 @@
           {}
           fdefs))
 
-(defn chunk-schemas
-  "Tranform a seq of :namespace,schema pairs into a seq of '(namespace schema) seqs"
-  [sdefs]
-  (partition 2 sdefs))
+(defn get-part [sdef]
+  (keyword "db.part" (name (or (:part sdef) "user"))))
 
 (defn expand-schemas
-  "Transform a seq of :namespace,schema pairs into a seq of
+  "Transform a seq of schematode schema maps into a seq of
   schema-expression maps suitable for processing by
   datomic-schema.schema/generate-schema."
   [sdefs]
-  (reduce (fn expand-schemas- [a [sname sdef]]
-            (let [part (keyword "db.part" (name (or (:part sdef) "user")))
-                  sname (name sname)
+  (reduce (fn expand-schemas- [a sdef]
+            (let [kname (:namespace sdef)
+                  sname (name kname)
                   attrs (expand-fields (:attrs sdef))]
               (conj a
-                    {:part part
+                    {:part (get-part sdef)
                      :namespace sname
                      :name sname
-                     :basetype (keyword sname)
+                     :basetype kname
                      :fields attrs})))
           []
           sdefs))
 
 (defn partize
-  "Transform a seq of :namespace,schema pairs into a seq of
+  "Transform a seq of schematode schema maps into a seq of
   transactable partition-installation maps."
   [sdefs tempid-fn]
   (reduce (partial dsa/part-to-datomic tempid-fn)
           []
           (remove #{:db.part/user}
-                  (distinct
-                   (map (fn partize- [[_ s]] (keyword "db.part" (name (or (:part s) "user"))))
-                        sdefs)))))
+                  (distinct (map get-part sdefs)))))
 
 (defn namespace-dbfns [sname dbfns]
   (map (fn namespace-dbfns- [dbfn]
@@ -62,7 +58,7 @@
   [sdefs]
   (flatten
    (remove nil?
-           (map (fn extract-dbfns- [[sname sdef]] (namespace-dbfns sname (:dbfns sdef)))
+           (map (fn extract-dbfns- [sdef] (namespace-dbfns (:namespace sdef) (:dbfns sdef)))
                 sdefs))))
 
 (defn dbfnize
