@@ -20,13 +20,15 @@
 ;; Demonstrate Basic Features
 ;; -------------------
 (def schema1
-  [[:sandwich {:attrs [[:name :string :indexed]
-                       [:bread :enum [:focaccia :wheat :maize :rice] :indexed]
-                       [:meat :string "Many people like meat on their sandwiches"]
-                       [:needs-toothpick :boolean]]}]
-   [:salad {:attrs [[:name :string :indexed]
-                    [:base :enum [:lettuce :spinach :pasta :unicorns] :indexed]
-                    [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}]])
+  [{:namespace :sandwich
+    :attrs [[:name :string :indexed]
+            [:bread :enum [:focaccia :wheat :maize :rice] :indexed]
+            [:meat :string "Many people like meat on their sandwiches"]
+            [:needs-toothpick :boolean]]}
+   {:namespace :salad
+    :attrs [[:name :string :indexed]
+            [:base :enum [:lettuce :spinach :pasta :unicorns] :indexed]
+            [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}])
 
 (defn step1! []
   (ds-core/load-schema! (d/connect db-url) schema1))
@@ -60,33 +62,35 @@
 ;; Demonstrate Constraint Features
 ;; -------------------
 (def schema2
-  [[:sandwich {:attrs [[:name :string :indexed]
-                       [:bread :enum [:focaccia :wheat :maize :rice] :indexed]
-                       [:meat :string "Many people like meat on their sandwiches"]
-                       [:needs-toothpick :boolean]]
-               :dbfns [;; We can express any db/fns we want here. If a
-                       ;; db/fn has the
-                       ;; :schematode.constraint-fn/active attribute
-                       ;; with the value true, it will be called as a
-                       ;; schematode constraint fn, which must return
-                       ;; either nil (success) or a message explaining
-                       ;; the violated constraint.
-                       {:db/ident :my-fn ; The :ident will be namespaced! ...in this case, to :sandwich/my-fn
-                        :schematode.constraint-fn/active true ; required
-                        :schematode.constraint-fn/name "Avoid at least one gross sandwich name" ; optional
-                        :schematode.constraint-fn/desc "Sandwiches with gross names repel customers." ; optional
-                        :db/fn (d/function '{:lang :clojure
-                                             :params [db]
-                                             :code (if (empty? (d/q '[:find ?e
-                                                                      :where [?e :sandwich/name "soap-scum"]]
-                                                                    db))
-                                                     nil
-                                                     "Ew. You are not allowed to name a sandwich \"soap-scum\".")})}
-                       ;; We can use helper fns to create common constraints.
-                       (ds-constraints/unique :sandwich :bread :meat)]}]
-   [:salad {:attrs [[:name :string :indexed]
-                    [:base :enum [:lettuce :spinach :pasta :unicorns] :indexed]
-                    [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}]])
+  [{:namespace :sandwich
+    :attrs [[:name :string :indexed]
+            [:bread :enum [:focaccia :wheat :maize :rice] :indexed]
+            [:meat :string "Many people like meat on their sandwiches"]
+            [:needs-toothpick :boolean]]
+    :dbfns [;; We can express any db/fns we want here. If a
+            ;; db/fn has the
+            ;; :schematode.constraint-fn/active attribute
+            ;; with the value true, it will be called as a
+            ;; schematode constraint fn, which must return
+            ;; either nil (success) or a message explaining
+            ;; the violated constraint.
+            {:db/ident :my-fn ; The :ident will be namespaced! ...in this case, to :sandwich/my-fn
+             :schematode.constraint-fn/active true ; required
+             :schematode.constraint-fn/name "Avoid at least one gross sandwich name" ; optional
+             :schematode.constraint-fn/desc "Sandwiches with gross names repel customers." ; optional
+             :db/fn (d/function '{:lang :clojure
+                                  :params [db]
+                                  :code (if (empty? (d/q '[:find ?e
+                                                           :where [?e :sandwich/name "soap-scum"]]
+                                                         db))
+                                          nil
+                                          "Ew. You are not allowed to name a sandwich \"soap-scum\".")})}
+            ;; We can use helper fns to create common constraints.
+            (ds-constraints/unique :sandwich :bread :meat)]}
+   {:namespace :salad
+    :attrs [[:name :string :indexed]
+            [:base :enum [:lettuce :spinach :pasta :unicorns] :indexed]
+            [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}])
 
 (defn step4!
   "You must init-schematode-constraints! before you can use

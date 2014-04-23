@@ -62,6 +62,9 @@
   (tx :enforce {:user/username "mim" :user/dob "2012-01-01" :user/lastname "marp"})
   (ptouch-that '[:find ?e :where [?e :user/username]])
 
+  ;; constraints should fail by duplicating dob and lastname:
+  (tx :enforce {:user/username "pim" :user/dob "2012-01-01" :user/lastname "marp"})
+
   (def m (:db/fn (d/entity (d/db db-conn) :schematode/tx*)))
   (m (d/db db-conn) [{:db/id (d/tempid :db.part/user)
                       :user/username "jim"
