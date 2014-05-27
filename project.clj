@@ -1,4 +1,4 @@
-(defproject datomic-schematode "0.1.0-RC2"
+(defproject datomic-schematode "0.1.0-RC3"
   :description "lets you express concise Datomic schema with DB constraints"
   :url "https://github.com/vlacs/datomic-schematode"
   :license {:name "Eclipse Public License"
