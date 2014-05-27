@@ -1,7 +1,7 @@
 (ns datomic-schematode.constraints-test.config
   (:require [clojure.test :refer :all]
             [datomic.api :as d]
-            [datomic-schematode :as ds-core]
+            [datomic-schematode :as dst]
             [datomic-schematode.constraints :as ds-constraints]))
 
 (def db-url "datomic:mem://constraints-test")
@@ -14,8 +14,8 @@
 
 (defn with-schema [f]
   (d/create-database db-url)
-  (ds-core/init-schematode-constraints! (d/connect db-url))
-  (ds-core/load-schema! (d/connect db-url) test-schemas)
+  (dst/init-schematode-constraints! (d/connect db-url))
+  (dst/load-schema! (d/connect db-url) test-schemas)
   (f)
   (d/delete-database db-url))
 

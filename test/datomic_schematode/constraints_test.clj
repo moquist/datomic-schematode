@@ -1,7 +1,7 @@
 (ns datomic-schematode.constraints-test
   (:require [clojure.test :refer :all]
             [datomic.api :as d]
-            [datomic-schematode :as ds-core]
+            [datomic-schematode :as dst]
             [datomic-schematode.constraints :as ds-constraints]
             [datomic-schematode.constraints-test.config :as config]
             [datomic-schematode.testslib :as ds-tl]))
@@ -18,18 +18,18 @@
 
   (testing ":schematode/tx"
     (testing ":enforce"
-      (is (= (ds-tl/should-throw @(ds-core/tx (d/connect config/db-url) :enforce
-                                              [{:db/id (d/tempid :db.part/user) :a/a1 "" :a/a2 ""}
-                                               {:db/id (d/tempid :db.part/user) :a/a1 "" :a/a2 ""}]))
+      (is (= (ds-tl/should-throw @(dst/tx (d/connect config/db-url) :enforce
+                                          [{:db/id (d/tempid :db.part/user) :a/a1 "" :a/a2 ""}
+                                           {:db/id (d/tempid :db.part/user) :a/a1 "" :a/a2 ""}]))
              "Got expected exception:\n\tjava.lang.Exception: [\"unique constraint failed for [:a/a1 :a/a2]\"]")))
     (testing ":warn"
-      (is (= (keys @(ds-core/tx (d/connect config/db-url) :warn
-                                [{:db/id (d/tempid :db.part/user) :a/a1 "" :a/a2 ""}
-                                 {:db/id (d/tempid :db.part/user) :a/a1 "" :a/a2 ""}]))
+      (is (= (keys @(dst/tx (d/connect config/db-url) :warn
+                            [{:db/id (d/tempid :db.part/user) :a/a1 "" :a/a2 ""}
+                             {:db/id (d/tempid :db.part/user) :a/a1 "" :a/a2 ""}]))
              '(:db-before :db-after :tx-data :tempids)))))
 
   (testing ":schematode/tx*"
-    (is (= (ds-core/tx* (d/connect config/db-url) 
-                        [{:db/id (d/tempid :db.part/user) :a/a1 "" :a/a2 ""}
-                         {:db/id (d/tempid :db.part/user) :a/a1 "" :a/a2 ""}])
+    (is (= (dst/tx* (d/connect config/db-url) 
+                    [{:db/id (d/tempid :db.part/user) :a/a1 "" :a/a2 ""}
+                     {:db/id (d/tempid :db.part/user) :a/a1 "" :a/a2 ""}])
            '("unique constraint failed for [:a/a1 :a/a2]")))))

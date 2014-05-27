@@ -1,7 +1,6 @@
 (ns datomic-schematode.core-test.config
   (:require [clojure.test :refer :all]
-            [datomic.api :as d]
-            [datomic-schematode :as ds-core]))
+            [datomic.api :as d]))
 
 (def db-url "datomic:mem://testdb")
 
