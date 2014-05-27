@@ -1,4 +1,4 @@
-datomic-schematode [![Build Status](https://travis-ci.org/vlacs/datomic-schematode.png?branch=master)](https://travis-ci.org/vlacs/datomic-schematode)
+datomic-schematode ![Build Status](https://codeship.io/projects/b470da60-c813-0131-26e8-0efa69ea263d/status)
 ===============
 ##### Note: Still pre-release.
 
