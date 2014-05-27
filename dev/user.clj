@@ -7,7 +7,7 @@
             [clojure.tools.namespace.repl :refer (refresh refresh-all)]
             [datomic.api :as d]
             [datomic-schema.schema :as dsa]
-            [datomic-schematode :as ds-core]
+            [datomic-schematode :as dst]
             [datomic-schematode.constraints :as ds-constraints]
             [datomic-schematode.constraints.support :as dsc-support]
             [datomic-schematode.core-test :as ds-test]
@@ -21,8 +21,8 @@
   []
   (d/create-database db-url)
   (alter-var-root #'db-conn (constantly (d/connect db-url)))
-  (ds-core/init-schematode-constraints! db-conn)
-  (ds-core/load-schema! db-conn ds-test/test-schemas))
+  (dst/init-schematode-constraints! db-conn)
+  (dst/load-schema! db-conn ds-test/test-schemas))
 
 (defn stop!
   "Shuts down and destroys the current development system."
