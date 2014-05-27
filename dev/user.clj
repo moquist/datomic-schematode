@@ -7,7 +7,7 @@
             [clojure.tools.namespace.repl :refer (refresh refresh-all)]
             [datomic.api :as d]
             [datomic-schema.schema :as dsa]
-            [datomic-schematode.core :as ds-core]
+            [datomic-schematode :as ds-core]
             [datomic-schematode.constraints :as ds-constraints]
             [datomic-schematode.constraints.support :as dsc-support]
             [datomic-schematode.core-test :as ds-test]

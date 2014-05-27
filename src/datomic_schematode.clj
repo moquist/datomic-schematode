@@ -1,4 +1,4 @@
-(ns datomic-schematode.core
+(ns datomic-schematode
   (:require [datomic.api :as d]
             [incanter.stats :as stats]
             [datomic-schema.schema :as dsa]

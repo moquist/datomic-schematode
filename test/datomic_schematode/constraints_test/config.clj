@@ -1,7 +1,7 @@
 (ns datomic-schematode.constraints-test.config
   (:require [clojure.test :refer :all]
             [datomic.api :as d]
-            [datomic-schematode.core :as ds-core]
+            [datomic-schematode :as ds-core]
             [datomic-schematode.constraints :as ds-constraints]))
 
 (def db-url "datomic:mem://constraints-test")

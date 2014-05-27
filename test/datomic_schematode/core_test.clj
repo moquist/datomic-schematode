@@ -1,7 +1,7 @@
 (ns datomic-schematode.core-test
   (:require [clojure.test :refer :all]
             [datomic.api :as d]
-            [datomic-schematode.core :as ds-core]
+            [datomic-schematode :as ds-core]
             [datomic-schematode.constraints :as ds-constraints]
             [datomic-schematode.core-test.config :as config]))
 
