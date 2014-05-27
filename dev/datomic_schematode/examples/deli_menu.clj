@@ -4,7 +4,7 @@
   datomic-schematode.examples.deli-menu
   (:require [clojure.pprint :refer [pprint]]
             [datomic.api :as d]
-            [datomic-schematode :as ds-core]
+            [datomic-schematode :as dst]
             [datomic-schematode.constraints :as ds-constraints]))
 
 (def db-url "datomic:mem://menudb")
@@ -31,7 +31,7 @@
             [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}])
 
 (defn step1! []
-  (ds-core/load-schema! (d/connect db-url) schema1))
+  (dst/load-schema! (d/connect db-url) schema1))
 
 (defn step2! []
   (d/transact (d/connect db-url)
@@ -96,12 +96,12 @@
   "You must init-schematode-constraints! before you can use
    schematode's constraint features."
   []
-  (ds-core/init-schematode-constraints! (d/connect db-url)))
+  (dst/init-schematode-constraints! (d/connect db-url)))
 
 (defn step5!
   "schema2 contains db/fns with :schematode.constraint-fn attrs."
   []
-  (ds-core/load-schema! (d/connect db-url) schema2))
+  (dst/load-schema! (d/connect db-url) schema2))
 
 (defn step6!
   "Can we violate our constraints?"
@@ -121,7 +121,7 @@
 (defn step7
   "Test our constraints without attempting to transact anything."
   []
-  (ds-core/tx* (d/connect db-url)
+  (dst/tx* (d/connect db-url)
                [{:db/id (d/tempid :db.part/user)
                  :sandwich/name "soap-scum"}
                 {:db/id (d/tempid :db.part/user)
@@ -173,7 +173,7 @@
 (defn step11
   "Get some performance cost stats."
   []
-  (ds-core/constraint-cost-stats (d/connect db-url)))
+  (dst/constraint-cost-stats (d/connect db-url)))
 
 (defn do-it-all []
   (pprint [(step0!)
