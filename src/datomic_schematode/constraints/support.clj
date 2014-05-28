@@ -15,8 +15,11 @@
     :attrs [[:name :string :indexed]
             [:desc :string]
             [:active :boolean "All db/fns with :schematode-constraint-fn/active = true will be executed by :schematode-tx"]]}
-   {:namespace :schematode.constraint :attrs [[:constraint/messages :string "messages from :schematode/tx*" :indexed]
-                                              [:constraint/elapsed-msec :double "elapsed time applying schematode constraint fns"]]}
+
+   {:namespace :schematode.constraint
+    :attrs [[:constraint/messages :string "messages from :schematode/tx*" :indexed]
+            [:constraint/elapsed-msec :double "elapsed time applying schematode constraint fns"]]}
+
    {:namespace :schematode
     :dbfns
     [{:db/ident :tx*
