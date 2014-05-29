@@ -105,7 +105,7 @@ datomic-schematode.examples.deli-menu> (d/transact (d/connect db-url)
                                                      :salad/dressing :salad.dressing/ceasar}])
 ;; => #<promise$settable_future$reify__4958@65876428: {:db-before datomic.db.Db@bc569020, :db-after datomic.db.Db@eb44b720, :tx-data ...
 ```
-#### Query Your Facts
+#### Check Your Facts
 Did our assertions work?
 ```clj
 datomic-schematode.examples.deli-menu> (let [db (d/db (d/connect db-url))
