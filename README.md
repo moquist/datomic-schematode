@@ -36,12 +36,12 @@ All artifacts are published to [clojars](https://clojars.org/datomic-schematode)
 [datomic-schematode "0.1.0-RC3"]
 ```
 
-
 ## Examples
 In the following examples, a few details are ellided. Please see
 ```dev/datomic_schematode/examples/deli_menu.clj``` for the full example code.
 
-#### First, you need to express your schemas. Here's a small schema for a deli menu:
+#### Express Your Schema
+Here's a small schema for a deli menu:
 ```clj
 (ns datomic-schematode.examples.deli-menu
   (:require [datomic-schematode :as dst]
@@ -58,12 +58,35 @@ In the following examples, a few details are ellided. Please see
             [:base :enum [:lettuce :spinach :pasta :unicorns] :indexed]
             [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}])
 ```
-#### Next, load your schema into datomic:
+#### Expand Your Schema
+You don't need to do this normally, but it's always good to know how things work (especially if you're debugging!).
+```clj
+datomic-schematode.examples.deli-menu> (pprint (dst/schematize schema1 d/tempid))
+;; =>(({:db/noHistory false,
+;; =>   :db/cardinality :db.cardinality/one,
+;; =>   :db.install/_attribute :db.part/db,
+;; =>   :db/index false,
+;; =>   :db/fulltext false,
+;; =>   :db/doc "",
+;; =>   :db/isComponent false,
+;; =>   :db/valueType :db.type/boolean,
+;; =>   :db/ident :sandwich/needs-toothpick,
+;; =>   :db/id {:part :db.part/db, :idx -1000085}}
+;; =>  {:db/noHistory false,
+;; =>   :db/cardinality :db.cardinality/one,
+;; =>   :db.install/_attribute :db.part/db,
+;; =>   :db/index false,
+;; => ...
+```
+
+#### Load Your Schema
+Schematode has a load-schema! fn to transact your schema for you.
 ```clj
 datomic-schematode.examples.deli-menu> (dst/load-schema! (d/connect db-url) schema1)
 ;; => (#<promise$settable_future$reify__4958@6af8f1e9: {:db-before datomic.db.Db@72124995, :db-after datomic.db.Db@c5df3f53, :tx-data [#Datum{:e 13194139534316 :a 50 :v #inst "2014-03-15T04:23:47.235-00:00" :tx 13194139534316 :added true}], :tempids {}}> ...)
 ```
-#### Now transact some facts using your new schema:
+#### Assert Some Facts
+Let's add some things to our deli menu.
 ```clj
 datomic-schematode.examples.deli-menu> (d/transact (d/connect db-url)
                                                    [{:db/id (d/tempid :db.part/user)
@@ -82,7 +105,8 @@ datomic-schematode.examples.deli-menu> (d/transact (d/connect db-url)
                                                      :salad/dressing :salad.dressing/ceasar}])
 ;; => #<promise$settable_future$reify__4958@65876428: {:db-before datomic.db.Db@bc569020, :db-after datomic.db.Db@eb44b720, :tx-data ...
 ```
-#### Now you can get your facts back out:
+#### Query Your Facts
+Did our assertions work?
 ```clj
 datomic-schematode.examples.deli-menu> (let [db (d/db (d/connect db-url))
                                              entities (map #(d/touch
@@ -104,11 +128,13 @@ Datomic Schematode enables you to use any db/fn as a constraint, providing that 
 2. returns a message string on failure.
 
 Suppose that you want to constrain your data such that no sandwich can ever be
-named "soap-scum", and such that no two sandwiches can have the same bread and
-meat. The "soap-scum" constraint is not likely to be common, so you'll have to
-write your own db/fn for that one. But datomic-schematode.constraints/unique can
-help you out with multi-attribute uniqueness. Here's how the updated schema
-looks:
+named "soap-scum" (a poor example of a constraint, but a concise
+example of how any constraint fn could be written), and such that no
+two sandwiches can have the same bread and meat. The "soap-scum"
+constraint is not likely to be common, so you'll have to write your
+own db/fn for that one. But datomic-schematode.constraints/unique can
+help you out with multi-attribute uniqueness. Here's how the updated
+schema looks:
 ```clj
 (def schema2
   [{:namespace :sandwich
@@ -140,6 +166,27 @@ looks:
     :attrs [[:name :string :indexed]
             [:base :enum [:lettuce :spinach :pasta :unicorns] :indexed]
             [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}])
+```
+Let's pause and take a look at what schema2 looks like after expansion. dst/schematize works just as it did before, but here's how you can see what the db fns look like before they're transacted by dst/load-schema!:
+```clj
+datomic-schematode.examples.deli-menu> (pprint (dst/dbfnize schema2 d/tempid))
+;; =>({:db/fn
+;; =>  {:lang :clojure,
+;; =>   :imports [],
+;; =>   :requires [],
+;; =>   :params [db],
+;; =>   :code
+;; =>   "(if (empty? (d/q (quote [:find ?e :where [?e :sandwich/name \"soap-scum\"]]) db)) nil \"Ew. You are not allowed to name a sandwich \\\"soap-scum\\\".\")",
+;; =>   :fnref #<Delay@33526b60: :not-delivered>},
+;; =>  :schematode.constraint-fn/desc
+;; =>  "Sandwiches with gross names repel customers.",
+;; =>  :schematode.constraint-fn/name
+;; =>  "Avoid at least one gross sandwich name",
+;; =>  :schematode.constraint-fn/active true,
+;; =>  :db/ident :sandwich/my-fn,
+;; =>  :db/id {:part :db.part/user, :idx -1000107}}
+;; => {:db/fn
+;; => ...
 ```
 #### Constraints Step 2: Transact the necessary Schematode constraints schema and db/fns:
 ```clj
@@ -240,7 +287,9 @@ datomic-schematode.examples.deli-menu> (dst/constraint-cost-stats (d/connect db-
 ```
 
 TODO:
+* Add support for constraints executed on the peer.
 * Add vanilla support for required attrs.
+* Write much better tests.
 
 ## Thanks
 ...to [Aaron Brooks](https://github.com/abrooks) for sharing the idea for what became :schematode/tx with me.
