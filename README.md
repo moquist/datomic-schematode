@@ -229,7 +229,8 @@ datomic-schematode.examples.deli-menu> (dst/tx (d/connect db-url)
                                                      :sandwich/meat ""}])
 ;; => Exception ["Ew. You are not allowed to name a sandwich \"soap-scum\"."]["unique constraint failed for [:sandwich/bread :sandwich/meat]"]  ns-10241/eval10242/fn--10243 (form-init9213208939110354565.clj:1)
 ```
-#### You can test your constraints without attempting to transact anything. Just pull the :schematode/tx* db/fn out of Datomic and execute it on your transaction data (or use datomic-schematode/tx*, which wraps :schematode/tx* for you):
+#### Test Your Constraints
+You can test your constraints without attempting to transact anything. Just pull the :schematode/tx* db/fn out of Datomic and execute it on your transaction data (or use datomic-schematode/tx*, which wraps :schematode/tx* for you):
 ```clj
 datomic-schemtode.examples.deli-menu> (let [my-schematode-tx* (:db/fn (d/entity (d/db (d/connect db-url)) :schematode/tx*))]
                                          (my-schematode-tx* (d/db (d/connect db-url))
@@ -259,7 +260,13 @@ datomic-schematode.examples.deli-menu> (dst/tx* (d/connect db-url)
                                                       :sandwich/meat ""}])
 ;; => ("Ew. You are not allowed to name a sandwich \"soap-scum\"." "unique constraint failed for [:sandwich/bread :sandwich/meat]")
 ```
-#### If you want to know about constraint violations, but transact the data anyhow, you can use :warn instead of :enforce when you call :schematode/tx:
+#### Ignore Your Constraints
+If you want to know about constraint violations, but transact the data anyhow,
+you can use :warn instead of :enforce when you call :schematode/tx.
+
+N.B.: Don't do this in production. Warning once and then continuing without
+resolving the constraint issues will result in the same constraint messages
+being added to all future txs executed with :warn.
 ```clj
 datomic-schematode.examples.deli-menu> (d/transact (d/connect db-url)
                                                    [[:schematode/tx :warn [{:db/id (d/tempid :db.part/user)
