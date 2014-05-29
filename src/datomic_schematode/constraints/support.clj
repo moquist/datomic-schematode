@@ -80,7 +80,7 @@
                      txs (conj txs {:db/id txid :schematode.constraint/elapsed-msec et})]
                  (if (nil? result)
                    txs
-                   (let [result (map (fn schematode-tx- [r] [r]) result)
+                   (let [result (map vector result)
                          result (str (reduce str result))]
                      (if (= :warn enforcement)
                        (conj txs {:db/id txid
