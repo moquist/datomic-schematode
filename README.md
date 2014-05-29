@@ -286,6 +286,10 @@ Note that the constraint messages have been applied to the TX entity.
 #### Analyze Constraint Costs
 You can query the TX entities for the time elapsed while applying schematode
 constraints, or you can just call datomic-schematode/constraint-cost-stats.
+
+This has not been tested with a large database, so the performance
+characteristics in different load scenarios and at scale are unknown. User
+beware!
 ```clj
 datomic-schematode.examples.deli-menu> (let [db (d/db (d/connect db-url))
                                              query '[:find ?e :where [?e :schematode.constraint/elapsed-msec]]]
