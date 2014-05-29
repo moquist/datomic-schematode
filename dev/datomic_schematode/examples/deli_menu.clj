@@ -1,5 +1,5 @@
 (ns ^{:doc
-      "Run fns step0! and following in your REPL to demonstrate
+      "Run fns step0 and following in your REPL to demonstrate
       datomic-schematode usage."}
   datomic-schematode.examples.deli-menu
   (:require [clojure.pprint :refer [pprint]]
@@ -9,13 +9,13 @@
 
 (def db-url "datomic:mem://menudb")
 
-(defn step0! []
+(defn step0 []
   (d/create-database db-url)
   (d/connect db-url))
 
 (defn reset []
   (d/delete-database db-url)
-  (step0!))
+  (step0))
 
 ;; Demonstrate Basic Features
 ;; -------------------
@@ -30,10 +30,13 @@
             [:base :enum [:lettuce :spinach :pasta :unicorns] :indexed]
             [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}])
 
-(defn step1! []
+(defn step1 []
+  (pprint (dst/schematize schema1 d/tempid)))
+
+(defn step2 []
   (dst/load-schema! (d/connect db-url) schema1))
 
-(defn step2! []
+(defn step3 []
   (d/transact (d/connect db-url)
               [{:db/id (d/tempid :db.part/user)
                 :sandwich/name "Norville's #1"
@@ -50,7 +53,7 @@
                 :salad/base :salad.base/lettuce
                 :salad/dressing :salad.dressing/ceasar}]))
 
-(defn step3 []
+(defn step4 []
   (let [db (d/db (d/connect db-url))
         entities (map #(d/touch
                         (d/entity db
@@ -92,18 +95,21 @@
             [:base :enum [:lettuce :spinach :pasta :unicorns] :indexed]
             [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}])
 
-(defn step4!
+(defn step5 []
+  (pprint (dst/dbfnize schema2 d/tempid)))
+
+(defn step6
   "You must init-schematode-constraints! before you can use
    schematode's constraint features."
   []
   (dst/init-schematode-constraints! (d/connect db-url)))
 
-(defn step5!
+(defn step7
   "schema2 contains db/fns with :schematode.constraint-fn attrs."
   []
   (dst/load-schema! (d/connect db-url) schema2))
 
-(defn step6!
+(defn step8
   "Can we violate our constraints?"
   []
   (d/transact (d/connect db-url)
@@ -118,7 +124,7 @@
                                           :sandwich/bread :sandwich.bread/rice
                                           :sandwich/meat ""}]]]))
 
-(defn step7
+(defn step9
   "Test our constraints without attempting to transact anything."
   []
   (dst/tx* (d/connect db-url)
@@ -133,7 +139,7 @@
                  :sandwich/bread :sandwich.bread/rice
                  :sandwich/meat ""}]))
 
-(defn step8!
+(defn step10
   "Apply constraint warning messages to the TX entity, but let the
    transaction go through.
 
@@ -153,7 +159,7 @@
                                        :sandwich/bread :sandwich.bread/rice
                                        :sandwich/meat ""}]]]))
 
-(defn step9 []
+(defn step11 []
   (let [db (d/db (d/connect db-url))
         txs (map #(d/touch
                    (d/entity db
@@ -162,7 +168,7 @@
                         :where [?tx :schematode.constraint/messages]] db))]
     txs))
 
-(defn step10
+(defn step12
   "What is the performance cost of using :schematode/tx?"
   []
   (let [db (d/db (d/connect db-url))
@@ -170,21 +176,23 @@
     (map #(:schematode.constraint/elapsed-msec (d/entity db (first %)))
          (d/q query db))))
 
-(defn step11
+(defn step13
   "Get some performance cost stats."
   []
   (dst/constraint-cost-stats (d/connect db-url)))
 
 (defn do-it-all []
-  (pprint [(step0!)
-           (step1!)
-           (step2!)
+  (pprint [(reset)
+           (step1)
+           (step2)
            (step3)
-           (step4!)
-           (step5!)
-           (step6!)
+           (step4)
+           (step5)
+           (step6)
            (step7)
-           (step8!)
+           (step8)
            (step9)
            (step10)
-           (step11)]))
+           (step11)
+           (step12)
+           (step13)]))
