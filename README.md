@@ -4,11 +4,12 @@ datomic-schematode ![Build Status](https://codeship.io/projects/b470da60-c813-01
 
 <a title="By Bob Goldstein, UNC Chapel Hill http://bio.unc.edu/people/faculty/goldstein/ (Own work) [CC-BY-SA-3.0 (http://creativecommons.org/licenses/by-sa/3.0)], via Wikimedia Commons" href="http://commons.wikimedia.org/wiki/File%3ACelegansGoldsteinLabUNC.jpg"><img width="64" alt="CelegansGoldsteinLabUNC" src="http://upload.wikimedia.org/wikipedia/commons/6/6a/CelegansGoldsteinLabUNC.jpg"/></a>
 
-    They set a schematode on Norville at lunch, in the new deli. It was sighted
-    by laser, and fell through an einrosen-door from across the street into the
-    mauve threads of his tweed jacket as he read the menu. It ascended his torso,
-    leaving a microscopic trail of its gastropod-derived polymer network gel among
-    the weave. It crouched on his shoulder.
+    They set a schematode on Norville at lunch, in the new deli. It
+    was sighted by laser, and fell through an einrosen-door from
+    across the street into the mauve threads of his tweed jacket as he
+    read the menu. Ascending his torso, it left a microscopic trail of
+    its gastropod-derived polymer network gel among the weave. It
+    crouched on his shoulder.
 
     “Focaccia reubens and hold the horsey,” Norville told Benny, the deli man.
 
