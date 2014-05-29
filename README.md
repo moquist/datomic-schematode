@@ -283,7 +283,9 @@ datomic-schematode.examples.deli-menu> (d/transact (d/connect db-url)
 ;; => ... #Datum{:e 13194139534344 :a 74 :v "[\"Ew. You are not allowed to name a sandwich \\\"soap-scum\\\".\"][\"unique constraint failed for [:sandwich/bread :sandwich/meat]\"]" ...
 ```
 Note that the constraint messages have been applied to the TX entity.
-#### Analyze costs: you can query the TX entities for the time elapsed while applying schematode constraints, or you can just call datomic-schematode/constraint-cost-stats:
+#### Analyze Constraint Costs
+You can query the TX entities for the time elapsed while applying schematode
+constraints, or you can just call datomic-schematode/constraint-cost-stats.
 ```clj
 datomic-schematode.examples.deli-menu> (let [db (d/db (d/connect db-url))
                                              query '[:find ?e :where [?e :schematode.constraint/elapsed-msec]]]
