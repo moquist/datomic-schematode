@@ -1,5 +1,6 @@
 (ns datomic-schematode.testslib)
 
+;; TODO: see doc for clojure.test/is (DOH!)
 (defmacro should-throw
   "Borrowed from https://github.com/Datomic/day-of-datomic .
    Runs forms, expecting an exception. Returns exception message if an
