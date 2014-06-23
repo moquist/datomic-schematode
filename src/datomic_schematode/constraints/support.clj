@@ -77,7 +77,7 @@
          :params [db enforcement txs]
          :code (let [txid (d/tempid :db.part/tx)
                      [et result] (d/invoke db :schematode/tx-timed* db txs)
-                     txs (conj txs {:db/id txid :schematode.constraint/elapsed-msec et})]
+                     txs (conj (into [] txs) {:db/id txid :schematode.constraint/elapsed-msec et})]
                  (if (nil? result)
                    txs
                    (let [result (map vector result)
