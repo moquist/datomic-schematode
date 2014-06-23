@@ -306,4 +306,4 @@ TODO:
 * Write much better tests.
 
 ## Thanks
-...to [Aaron Brooks](https://github.com/abrooks) for sharing the idea for what became :schematode/tx with me.
+...to [Aaron Brooks](https://github.com/abrooks) for sharing with me the idea for what became :schematode/tx.
