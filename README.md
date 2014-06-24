@@ -33,7 +33,7 @@ Uses https://github.com/Yuppiechef/datomic-schema .
 All artifacts are published to [clojars](https://clojars.org/datomic-schematode). Latest version is `0.1.0-RC3`:
 
 ```
-[datomic-schematode "0.1.0-RC3"]
+[datomic-schematode "0.1.3-RC1"]
 ```
 
 ## Examples
