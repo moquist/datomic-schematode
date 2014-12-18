@@ -35,7 +35,7 @@
           without transacting anything."
          :params [db txs]
          :code (let [wdb (:db-after (d/with db txs))
-                     constraints (map first 
+                     constraints (map first
                                       (d/q '[:find ?e
                                              :where [?e :schematode.constraint-fn/active true]] wdb))
                      msgs (if (empty? constraints)
@@ -55,7 +55,7 @@
                                  msecs."
                            :params ~['db 'txs]
                            :code ~(msec-timer '(d/invoke db :schematode/tx* db txs))})}
-     
+
      {:db/ident :tx
       :db/fn
       (d/function
@@ -89,6 +89,3 @@
                                   ;; TX entity?
                                   :schematode.constraint/messages result})
                        (throw (Exception. result))))))})}]}])
-
-
-
