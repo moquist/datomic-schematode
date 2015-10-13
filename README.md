@@ -52,7 +52,7 @@ Here's a small schema for a deli menu:
    {:namespace :salad
     :attrs [[:name :string :indexed]
             [:base :enum [:lettuce :spinach :pasta :unicorns] :indexed]
-            [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}])
+            [:dressing :enum [:ranch :honey-mustard :italian :caesar :minoan]]]}])
 ```
 #### Expand Your Schema
 You don't need to do this normally, but it's always good to know how things work (especially if you're debugging!).
@@ -96,9 +96,9 @@ datomic-schematode.examples.deli-menu> (d/transact (d/connect db-url)
                                                      :sandwich/meat "turkey"
                                                      :sandwich/needs-toothpick false}
                                                     {:db/id (d/tempid :db.part/user)
-                                                     :salad/name "Ceasar"
+                                                     :salad/name "Caesar"
                                                      :salad/base :salad.base/lettuce
-                                                     :salad/dressing :salad.dressing/ceasar}])
+                                                     :salad/dressing :salad.dressing/caesar}])
 ;; => #<promise$settable_future$reify__4958@65876428: {:db-before datomic.db.Db@bc569020, :db-after datomic.db.Db@eb44b720, :tx-data ...
 ```
 #### Check Your Facts
@@ -161,7 +161,7 @@ schema looks:
    {:namespace :salad
     :attrs [[:name :string :indexed]
             [:base :enum [:lettuce :spinach :pasta :unicorns] :indexed]
-            [:dressing :enum [:ranch :honey-mustard :italian :ceasar :minoan]]]}])
+            [:dressing :enum [:ranch :honey-mustard :italian :caesar :minoan]]]}])
 ```
 Let's pause and take a look at what schema2 looks like after expansion. dst/schematize works just as it did before, but here's how you can see what the db fns look like before they're transacted by dst/load-schema!:
 ```clj
